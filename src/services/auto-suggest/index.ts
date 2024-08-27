@@ -59,7 +59,7 @@ export class AutoSuggest {
   ): Promise<Completion[] | []> {
     logger("getGPTSuggestions", context);
     try {
-      let prompt = `continue the follwing text:
+      let prompt = `continue the following text:
 ${context.query}`;
       if (this.plugin.settings.autoSuggestOptions.customInstructEnabled) {
         try {

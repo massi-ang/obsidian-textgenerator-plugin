@@ -16,6 +16,7 @@ import {
   ConverseStreamCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 import { AwsCredentialsWrapper } from "./awsCredentialsWrapper";
+import { ModelsHandler } from "../utils";
 const logger = debug("textgenerator:BedrockProvider");
 
 const globalVars: Record<string, boolean> = {
@@ -41,7 +42,7 @@ export const default_values = {
   region: "us-west-2",
   modelId: "anthropic.claude-3-sonnet-20240229-v1:0",
   custom_header: "",
-  custom_body: "{{modelId}}",
+  custom_body: "",
   sanatization_response: "",
   sanatization_streaming: "",
   streamable: true,
@@ -108,7 +109,7 @@ export default class BedrockProvider
         if (!stream) {
           const resp = await client.send(
             new ConverseCommand({
-              modelId: config.modelId,
+              modelId: config.model,
               messages: messages.map((m) => ({
                 role: roleMap(m.role),
                 content: [
@@ -199,7 +200,7 @@ export default class BedrockProvider
       while (i++ < (reqParams.n ?? 1)) {
         const resp = await client.send(
           new ConverseCommand({
-            modelId: config.modelId,
+            modelId: config.model,
             messages: [
               {
                 role: "user",
@@ -271,7 +272,12 @@ export default class BedrockProvider
             }}
           />
         </SettingItem>
-
+        <ModelsHandler
+          register={props.register}
+          sectionId={props.sectionId}
+          llmProviderId={props.self.originalId}
+          default_values={default_values}
+        />
         {vars.map((v: string) => (
           <SettingItem
             key={v}
@@ -295,22 +301,36 @@ export default class BedrockProvider
           </SettingItem>
         ))}
 
-        <div className="plug-tg-flex plug-tg-flex-col plug-tg-gap-2">
+        <div className="plug-tg-flex plug-tg-flex-col plug-tg-gap-1">
+          <div className="plug-tg-flex plug-tg-items-center plug-tg-gap-1">
+            To use this provider you need to create an AWS profile for the CLI
+            called <pre>obsidian-bedrock</pre>.
+          </div>
           <div className="plug-tg-text-lg plug-tg-opacity-70">Useful links</div>
-          <a href="https://docs.anthropic.com/claude/reference/getting-started-with-the-api">
+          <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html">
             <SettingItem
-              name="Getting started"
-              className="plug-tg-text-xs plug-tg-opacity-50 hover:plug-tg-opacity-100"
+              name="AWS CLI configuration"
+              className="plug-tg-text-s plug-tg-opacity-70 hover:plug-tg-opacity-100"
               register={props.register}
               sectionId={props.sectionId}
             >
               <IconExternalLink />
             </SettingItem>
           </a>
-          <a href="https://docs.anthropic.com/claude/reference/selecting-a-model">
+          <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html">
+            <SettingItem
+              name="What is Amazon Bedrock?"
+              className="plug-tg-text-s plug-tg-opacity-70 hover:plug-tg-opacity-100"
+              register={props.register}
+              sectionId={props.sectionId}
+            >
+              <IconExternalLink />
+            </SettingItem>
+          </a>
+          <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html">
             <SettingItem
               name="Available models"
-              className="plug-tg-text-xs plug-tg-opacity-50 hover:plug-tg-opacity-100"
+              className="plug-tg-text-s plug-tg-opacity-70 hover:plug-tg-opacity-100"
               register={props.register}
               sectionId={props.sectionId}
             >

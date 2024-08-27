@@ -1,4 +1,4 @@
-import { App, PluginSettingTab } from "obsidian";
+import { App, PluginSettingTab, Setting } from "obsidian";
 import TextGeneratorPlugin from "#/main";
 
 import { createRoot } from "react-dom/client";
@@ -29,6 +29,12 @@ export default class TextGeneratorSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
+    new Setting(containerEl)
+      .setName("Reload Plugin")
+      .addButton((b) =>
+        b.setButtonText("Reload").onClick(() => this.reloadPlugin())
+      );
+
     const div = containerEl.createDiv("div");
     const sections = createRoot(div);
 
