@@ -59,6 +59,9 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.637.0",
+    "@aws-sdk/credential-providers": "^3.637.0",
+    "@aws-sdk/types": "^3.609.0",
     "@codemirror/language": "^6.10.2",
     "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.32.0",
@@ -76,6 +79,7 @@
     "@rjsf/core": "^5.20.0",
     "@rjsf/utils": "^5.20.0",
     "@rjsf/validator-ajv8": "^5.20.0",
+    "@smithy/shared-ini-file-loader": "^3.1.4",
     "@tabler/icons-react": "^2.47.0",
     "@tailwindcss/forms": "^0.5.7",
     "@types/lodash.merge": "^4.6.9",

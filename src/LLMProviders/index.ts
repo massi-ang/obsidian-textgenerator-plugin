@@ -11,6 +11,7 @@ import LangchainAzureOpenAIChatProvider from "./langchain/azureOpenAIChat";
 import LangchainAzureOpenAIInstructProvider from "./langchain/azureOpenAIInstruct";
 import LangchainPalmProvider from "./langchain/palm";
 import LangchainChatGoogleGenerativeAIProvider from "./langchain/googleGenerativeAI";
+import BedrockProvider from "./custom/bedrock";
 // import LangchainReplicaProvider from "./langchain/replica"
 
 // import { LOCClone1, LOCClone2 } from "./langchain/clones";
@@ -48,7 +49,7 @@ export const defaultProviders = [
 
   // LOCClone1,
   // LOCClone2,
-
+  BedrockProvider,
   // custom
   CustomProvider,
 ];
