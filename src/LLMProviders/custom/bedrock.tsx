@@ -8,7 +8,7 @@ import Input from "#/ui/settings/components/input";
 import CustomProvider, { default_values as baseDefaultValues } from "./base";
 import { IconExternalLink } from "@tabler/icons-react";
 import { Platform } from "obsidian";
-import { Message, Role } from "#/types";
+import { Message, Model, Role } from "#/types";
 import {
   BedrockRuntimeClient,
   ConversationRole,
@@ -50,6 +50,12 @@ export const default_values = {
 
 export type CustomConfig = Record<keyof typeof default_values, string>;
 
+const roleMap = function (role: Role): ConversationRole {
+  if (role == "user" || role == "human") return ConversationRole.USER;
+  if (role == "assistant" || role == "admin") return ConversationRole.ASSISTANT;
+  throw new Error(`Unsupported role: ${role}`);
+};
+
 export default class BedrockProvider
   extends CustomProvider
   implements LLMProviderInterface
@@ -58,6 +64,7 @@ export default class BedrockProvider
   static id = "Bedrock (Custom)" as const;
   static slug = "bedrock" as const;
   static displayName = "Bedrock";
+  models: Model[] = [];
 
   streamable = true;
 
@@ -66,98 +73,101 @@ export default class BedrockProvider
   originalId = BedrockProvider.id;
   default_values = default_values;
 
+  convertMessage(m: Message): any {
+    logger(m.role);
+    logger(m.content);
+    if (typeof m.content == "string") {
+      return { role: roleMap(m.role), content: m.content };
+    }
+    const content = m.content.map((c) => {
+      if (c.type == "text") {
+        return { text: c.text };
+      } else if (c.type == "image_url") {
+        if (!c.image_url?.url || !(c.image_url.url.indexOf("base64") >= 0))
+          return;
+
+        return {
+          image: {
+            format: c.image_url.url.split(";base64")[0].split("/")[1],
+            source: {
+              bytes: Buffer.from(c.image_url.url.split("base64,")[1], "base64"),
+            },
+          },
+        };
+      }
+    });
+    return {
+      role: roleMap(m.role),
+      content,
+    };
+  }
+
   async generate(
     messages: Message[],
     reqParams: Partial<Omit<LLMConfig, "n">>,
     onToken?: (token: string, first: boolean) => void,
     customConfig?: CustomConfig
   ): Promise<string> {
-    return new Promise(async (s, r) => {
-      try {
-        console.log("generate", reqParams);
-        logger("----");
-        console.log("messages", messages);
-        console.log("customConfig", customConfig);
+    try {
+      logger("generate", reqParams);
+      logger("messages", messages);
+      logger("customConfig", customConfig);
 
-        let first = true;
-        let allText = "";
+      let first = true;
+      let allText = "";
 
-        const config = (this.plugin.settings.LLMProviderOptions[this.id] ??=
-          {});
-        logger("config", config);
-        console.log(config);
-        const credentials =
-          await new AwsCredentialsWrapper().getAWSCredentialIdentity(
-            "obsidian-bedrock"
-          );
-        const client = new BedrockRuntimeClient({
-          region: config.region,
-          credentials,
-        });
+      const config = (this.plugin.settings.LLMProviderOptions[this.id] ??= {});
+      logger("config", config);
+      const credentials =
+        await new AwsCredentialsWrapper().getAWSCredentialIdentity(
+          "obsidian-bedrock"
+        );
+      const client = new BedrockRuntimeClient({
+        region: config.region,
+        credentials,
+      });
 
-        if (!Platform.isDesktop) {
-          s("");
-          return;
-        }
-        const stream = reqParams.stream && this.streamable && config.streamable;
-        const roleMap = function (role: Role): ConversationRole {
-          if (role == "user" || role == "human") return ConversationRole.USER;
-          if (role == "assistant" || role == "admin")
-            return ConversationRole.ASSISTANT;
-          throw new Error(`Unsupported role: ${role}`);
-        };
-        if (!stream) {
-          const resp = await client.send(
-            new ConverseCommand({
-              modelId: config.model,
-              messages: messages.map((m) => ({
-                role: roleMap(m.role),
-                content: [
-                  {
-                    text: typeof m.content == "string" ? m.content : "",
-                  },
-                ],
-              })),
-            })
-          );
-          console.log(resp);
-
-          s(resp.output?.message?.content![0].text ?? "");
-
-          return;
-        } else {
-          const resp = await client.send(
-            new ConverseStreamCommand({
-              modelId: config.modelId,
-              messages: messages.map((m) => ({
-                role: roleMap(m.role),
-                content: [
-                  {
-                    text: typeof m.content == "string" ? m.content : "",
-                  },
-                ],
-              })),
-            })
-          );
-          console.log(resp);
-          if (resp.stream) {
-            for await (const token of resp.stream) {
-              const tokenText = token.contentBlockDelta?.delta?.text ?? "";
-              await onToken?.(tokenText, first);
-              allText += tokenText;
-              first = false;
-            }
-
-            s(allText);
-          } else {
-            throw new Error("Stream not supported");
-          }
-        }
-      } catch (errorRequest: any) {
-        logger("generate error", errorRequest);
-        return r(errorRequest);
+      if (!Platform.isDesktop) {
+        return "";
       }
-    });
+      const stream = reqParams.stream && this.streamable && config.streamable;
+      const converse_messages = messages.map((m) => this.convertMessage(m));
+      logger("messages conv", converse_messages);
+      if (!stream) {
+        const resp = await client.send(
+          new ConverseCommand({
+            modelId: config.model,
+            messages: converse_messages,
+          })
+        );
+        logger(resp);
+
+        return resp.output?.message?.content![0].text ?? "";
+      } else {
+        const resp = await client.send(
+          new ConverseStreamCommand({
+            modelId: config.modelId,
+            messages: converse_messages,
+          })
+        );
+        logger(resp);
+        if (resp.stream) {
+          for await (const token of resp.stream) {
+            const tokenText = token.contentBlockDelta?.delta?.text ?? "";
+            await onToken?.(tokenText, first);
+            allText += tokenText;
+            first = false;
+          }
+
+          return allText;
+        } else {
+          throw new Error("Stream not supported");
+        }
+      }
+    } catch (errorRequest: any) {
+      logger("generate error", errorRequest);
+      throw new Error(errorRequest);
+    }
   }
 
   async generateMultiple(
@@ -166,11 +176,10 @@ export default class BedrockProvider
     customConfig?: CustomConfig
   ): Promise<string[]> {
     try {
-      console.log("generateMultiple", reqParams);
+      logger("generateMultiple", reqParams);
       const config = (this.plugin.settings.LLMProviderOptions[this.id] ??= {});
       logger("config", config);
-      console.log("config", config);
-      console.log("Custom Config", customConfig);
+      logger("Custom Config", customConfig);
       const credentials =
         await new AwsCredentialsWrapper().getAWSCredentialIdentity(
           "obsidian-bedrock"
@@ -184,40 +193,24 @@ export default class BedrockProvider
         return [""];
       }
       //const stream = reqParams.stream && this.streamable && config.streamable;
-      const roleMap = function (role: Role): ConversationRole {
-        if (role == "user" || role == "human") return ConversationRole.USER;
-        if (role == "assistant" || role == "admin")
-          return ConversationRole.ASSISTANT;
-        throw new Error(`Unsupported role: ${role}`);
-      };
+
       let i = 0;
+      const converse_messages = messages.map((m) => this.convertMessage(m));
+      logger(converse_messages);
       const suggestions = [];
-      const message =
-        typeof messages[0].content == "string"
-          ? messages[0].content.trim()
-          : "";
-      console.log("message", message);
+      logger("message", messages);
       while (i++ < (reqParams.n ?? 1)) {
         const resp = await client.send(
           new ConverseCommand({
             modelId: config.model,
-            messages: [
-              {
-                role: "user",
-                content: [
-                  {
-                    text: message,
-                  },
-                ],
-              },
-            ],
+            messages: converse_messages,
             system: [{ text: "Complete the user sentence" }],
             inferenceConfig: {
               stopSequences: [...(reqParams.stop ?? []), ":"],
             },
           })
         );
-        console.log(resp);
+        logger(resp);
         if (resp.output?.message?.content![0]?.text)
           suggestions.push(resp.output?.message?.content![0]?.text);
       }
