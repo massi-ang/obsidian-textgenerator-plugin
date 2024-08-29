@@ -295,7 +295,7 @@ export default class Commands {
                 const activeView = await self.plugin.getActiveView();
                 const CM = ContentManagerCls.compile(activeView, self.plugin);
 
-                await self.plugin.textGenerator.tempalteToModal({
+                await self.plugin.textGenerator.templateToModal({
                   params: {},
                   templatePath: result.path,
                   editor: CM,
@@ -426,9 +426,14 @@ export default class Commands {
             async (selectedModel) => {
               console.log(selectedModel);
               const provider = self.plugin.settings.selectedProvider as string;
-              if (!provider || !self.plugin.settings.LLMProviderOptions[provider]) return;
+              if (
+                !provider ||
+                !self.plugin.settings.LLMProviderOptions[provider]
+              )
+                return;
 
-              self.plugin.settings.LLMProviderOptions[provider].model = selectedModel;
+              self.plugin.settings.LLMProviderOptions[provider].model =
+                selectedModel;
               await self.plugin.saveSettings();
             },
             "Choose a LLM"
@@ -449,7 +454,7 @@ export default class Commands {
         new PackageManagerUI(
           self.plugin.app,
           self.plugin,
-          async (result: string) => { }
+          async (result: string) => {}
         ).open();
       },
     },
@@ -694,7 +699,7 @@ export default class Commands {
     const cmds = this.commands.filter(
       (cmd) =>
         this.plugin.settings.options[
-        cmd.id as keyof typeof this.plugin.settings.options
+          cmd.id as keyof typeof this.plugin.settings.options
         ] === true
     );
 
@@ -708,8 +713,9 @@ export default class Commands {
       template.commands?.forEach((command) => {
         logger("Template commands ", { template, command });
         const cmd: Command = {
-          id: `${template.path.split("/").slice(-2, -1)[0]}-${command}-${template.id
-            }`,
+          id: `${template.path.split("/").slice(-2, -1)[0]}-${command}-${
+            template.id
+          }`,
           name: `${template.id || template.name}: ${command.toUpperCase()}`,
           callback: async () => {
             const self: Commands = this as any;
@@ -760,7 +766,7 @@ export default class Commands {
                   });
                   break;
                 case "modal":
-                  await self.plugin.textGenerator.tempalteToModal({
+                  await self.plugin.textGenerator.templateToModal({
                     params: {},
                     templatePath: template.path,
                     editor: CM,

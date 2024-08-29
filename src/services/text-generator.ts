@@ -93,7 +93,7 @@ export default class TextGenerator extends RequestHandler {
     );
 
     if (errorContext) {
-      logger("tempalteToModal error", errorContext);
+      logger("templateToModal error", errorContext);
       return Promise.reject(errorContext);
     }
 
@@ -407,7 +407,7 @@ export default class TextGenerator extends RequestHandler {
     );
 
     if (errortext) {
-      logger("tempalteToModal error", errortext);
+      logger("templateToModal error", errortext);
       return Promise.reject(errortext);
     }
 
@@ -423,7 +423,7 @@ export default class TextGenerator extends RequestHandler {
           createFileWithInput(path, context.context + text, this.plugin.app)
         );
         if (errorFile) {
-          logger("tempalteToModal error", errorFile);
+          logger("templateToModal error", errorFile);
           return Promise.reject(errorFile);
         }
 
@@ -486,7 +486,7 @@ export default class TextGenerator extends RequestHandler {
               );
 
               if (errorFile) {
-                logger("tempalteToModal error", errorFile);
+                logger("templateToModal error", errorFile);
                 return Promise.reject(errorFile);
               }
             }
@@ -505,7 +505,7 @@ export default class TextGenerator extends RequestHandler {
         }
 
         if (errortext || results == undefined) {
-          logger("tempalteToModal error", errortext);
+          logger("templateToModal error", errortext);
           return Promise.reject(errortext);
         }
 
@@ -694,7 +694,7 @@ ${removeYAML(content)}
         onSubmit
       ).open();
     else await onSubmit({});
-    logger("tempalteToModal end");
+    logger("templateToModal end");
   }
 
   getTemplates(promptsPath: string = this.plugin.settings.promptsPath) {

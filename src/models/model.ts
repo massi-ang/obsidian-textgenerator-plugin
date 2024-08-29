@@ -42,15 +42,15 @@ export class TemplatesModal extends FuzzySuggestModal<PromptTemplate> {
 
   // Renders each suggestion item.
   renderSuggestion(template: FuzzyMatch<PromptTemplate>, el: HTMLElement) {
-    // logger("renderSuggestion", template);
-    // el.createEl("div", { text: template.item.name });
-    // el.createEl("small", {
-    //   text: template.item.description?.substring(0, 150),
-    //   cls: "plug-tg-text-sm plug-tg-ml-6",
-    // });
-    // el.createEl("div", {});
-    // el.createEl("small", { text: template.item.path, cls: "path" });
-    // logger("renderSuggestion end", template);
+    logger("renderSuggestion", template);
+    el.createEl("div", { text: template.item.name });
+    el.createEl("small", {
+      text: template.item.description?.substring(0, 150),
+      cls: "plug-tg-text-sm plug-tg-ml-6",
+    });
+    el.createEl("div", {});
+    el.createEl("small", { text: template.item.path, cls: "path" });
+    logger("renderSuggestion end", template);
   }
 
   calculateMatchScore(

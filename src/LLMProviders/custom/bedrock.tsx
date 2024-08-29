@@ -9,15 +9,20 @@ import CustomProvider, { default_values as baseDefaultValues } from "./base";
 import { IconExternalLink } from "@tabler/icons-react";
 import { Platform } from "obsidian";
 import { Message, Model, Role } from "#/types";
+import { BedrockRuntimeClient } from "@aws-sdk/client-bedrock-runtime";
+import { App } from "obsidian";
 import {
-  BedrockRuntimeClient,
-  ConversationRole,
-  ConverseCommand,
-  ConverseStreamCommand,
-} from "@aws-sdk/client-bedrock-runtime";
-import { fromModelId, ChatMessage } from "@mirai73/bedrock-fm";
+  fromModelId,
+  ChatMessage,
+  fromImageModelId,
+  ImageModels,
+} from "@mirai73/bedrock-fm";
 import { AwsCredentialsWrapper } from "./awsCredentialsWrapper";
 import { ModelsHandler } from "../utils";
+import {
+  MessageContentComplex,
+  MessageContentText,
+} from "@langchain/core/messages";
 const logger = debug("textgenerator:BedrockProvider");
 
 const globalVars: Record<string, boolean> = {
@@ -115,6 +120,10 @@ export default class BedrockProvider
 
       const config = (this.plugin.settings.LLMProviderOptions[this.id] ??= {});
       logger("config", config);
+      if (!Platform.isDesktop) {
+        return "";
+      }
+
       const credentials =
         await new AwsCredentialsWrapper().getAWSCredentialIdentity(
           "obsidian-bedrock"
@@ -123,6 +132,21 @@ export default class BedrockProvider
         region: config.region,
         credentials,
       });
+
+      if (
+        config.model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V1 ||
+        config.model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V2_0 ||
+        config.model == ImageModels.STABILITY_STABLE_DIFFUSION_XL_V1
+      ) {
+        return await this.generateImage(
+          config.model,
+          client,
+          messages,
+          reqParams,
+          customConfig
+        );
+      }
+
       const fm = fromModelId(config.model, {
         client,
         maxTokenCount: reqParams.max_tokens,
@@ -130,9 +154,6 @@ export default class BedrockProvider
         temperature: reqParams.temperature,
       });
 
-      if (!Platform.isDesktop) {
-        return "";
-      }
       const stream = reqParams.stream && this.streamable && config.streamable;
       const converse_messages = messages.map((m) => this.convertMessage(m));
       logger("messages conv", converse_messages);
@@ -158,6 +179,35 @@ export default class BedrockProvider
       logger("generate error", errorRequest);
       throw new Error(errorRequest);
     }
+  }
+
+  async generateImage(
+    model: string,
+    client: BedrockRuntimeClient,
+    messages: Message[],
+    reqParams: Partial<Omit<LLMConfig, "n">>,
+    customConfig: CustomConfig | undefined
+  ): Promise<string> {
+    const prompt =
+      (messages[0].content[0] as MessageContentText).text ??
+      messages[0].content;
+    logger("image prompt", prompt);
+    if (!prompt) throw new Error("No prompt provided");
+    const imageModel = fromImageModelId(model, { client });
+    const images = await imageModel.generateImage(prompt, {
+      width: 1024,
+      height: 1024,
+    });
+    const imageBytes = Buffer.from(images[0].split("base64,")[1], "base64");
+    const attachmentFolderPath: string = this.plugin.app.vault.getConfig?.(
+      "attachmentFolderPath"
+    );
+    const fileName = `Created by ${model.split(".")[0]} ${new Date().toISOString().split(".")[0].replaceAll(":", "").replace("T", "").replaceAll("-", "")}.png`;
+    this.plugin.app.vault.createBinary(
+      attachmentFolderPath + `/` + fileName,
+      imageBytes
+    );
+    return `![[${fileName}]]`;
   }
 
   async generateMultiple(
