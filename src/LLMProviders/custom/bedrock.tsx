@@ -199,6 +199,7 @@ export default class BedrockProvider
       height: 1024,
     });
     const imageBytes = Buffer.from(images[0].split("base64,")[1], "base64");
+    // @ts-ignore
     const attachmentFolderPath: string = this.plugin.app.vault.getConfig?.(
       "attachmentFolderPath"
     );
