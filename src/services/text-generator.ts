@@ -4,7 +4,10 @@ import { TextGeneratorSettings } from "../types";
 import TextGeneratorPlugin from "../main";
 import ReqFormatter from "../utils/api-request-formatter";
 import { SetPath } from "../ui/settings/components/set-path";
-import type { InputContext } from "../scope/context-manager";
+import {
+  contextVariablesObj,
+  type InputContext,
+} from "../scope/context-manager";
 import {
   makeId,
   createFileWithInput,
@@ -475,8 +478,8 @@ export default class TextGenerator extends RequestHandler {
               const [errorFile, file] = await safeAwait(
                 createFileWithInput(
                   path +
-                  `/${text?.startsWith("FAILED:") ? "FAILED-" : ""}` +
-                  files[i].path,
+                    `/${text?.startsWith("FAILED:") ? "FAILED-" : ""}` +
+                    files[i].path,
                   text,
                   this.plugin.app
                 )
@@ -619,7 +622,7 @@ ${removeYAML(content)}
     return "\n> [!ai]+ AI\n>\n" + lines.join("\n").trim() + "\n\n";
   }
 
-  async tempalteToModal(props: {
+  async templateToModal(props: {
     params: Partial<TextGeneratorSettings>;
     /** Template path */
     templatePath?: string;
@@ -630,7 +633,7 @@ ${removeYAML(content)}
     /** defaults to true */
     activeFile?: boolean;
   }) {
-    logger("tempalteToModal");
+    logger("templateToModal");
     const templateFile = this.plugin.app.vault.getAbstractFileByPath(
       props.templatePath || ""
     );
@@ -677,12 +680,15 @@ ${removeYAML(content)}
         this.endLoading(true);
       }
     };
-
-    if (variables.length)
+    logger("variables", variables);
+    const filteredVariables = variables.filter(
+      (v) => contextVariablesObj[v] == undefined
+    );
+    if (filteredVariables.length > 0)
       new TemplateInputModalUI(
         this.plugin.app,
         this.plugin,
-        variables,
+        filteredVariables,
         metadata,
         templateContext,
         onSubmit
@@ -883,8 +889,9 @@ ${removeYAML(content)}
 
     const promptsPath = this.plugin.settings.promptsPath;
 
-    const guessPath = `${promptsPath}${promptsPath.endsWith("/") ? "" : "/"
-      }${id}.md`;
+    const guessPath = `${promptsPath}${
+      promptsPath.endsWith("/") ? "" : "/"
+    }${id}.md`;
 
     // test if the guess is actually a file
     if (await this.plugin.app.vault.adapter.exists(guessPath)) return guessPath;
@@ -905,7 +912,7 @@ ${removeYAML(content)}
 
   async updateTemplatesCache() {
     // get files, it will be empty onLoad, that's why we are using the getFilesOnLoad function
-    // nico update : stay this await hack here for moment, before find a better solution, but keept only one implementation to load templates list, in getTemplates()
+    // nico update : stay this await hack here for moment, before find a better solution, but kept only one implementation to load templates list, in getTemplates()
     await this.plugin.getFilesOnLoad();
 
     const templates = this.plugin.textGenerator.getTemplates();

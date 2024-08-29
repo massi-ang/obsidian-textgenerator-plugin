@@ -5,7 +5,6 @@ import TemplateInputModalView from "./view";
 import { createRoot } from "react-dom/client";
 
 export default class TemplateInputModalUI extends Modal {
-  result: string;
   plugin: TextGeneratorPlugin;
   onSubmit: (result: string) => void;
   root: any;

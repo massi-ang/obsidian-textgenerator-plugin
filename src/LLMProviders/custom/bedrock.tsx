@@ -15,6 +15,7 @@ import {
   ConverseCommand,
   ConverseStreamCommand,
 } from "@aws-sdk/client-bedrock-runtime";
+import { fromModelId, ChatMessage } from "@mirai73/bedrock-fm";
 import { AwsCredentialsWrapper } from "./awsCredentialsWrapper";
 import { ModelsHandler } from "../utils";
 const logger = debug("textgenerator:BedrockProvider");
@@ -50,9 +51,10 @@ export const default_values = {
 
 export type CustomConfig = Record<keyof typeof default_values, string>;
 
-const roleMap = function (role: Role): ConversationRole {
-  if (role == "user" || role == "human") return ConversationRole.USER;
-  if (role == "assistant" || role == "admin") return ConversationRole.ASSISTANT;
+const roleMap = function (role: Role): "human" | "ai" | "system" {
+  if (role == "user" || role == "human") return "human";
+  if (role == "assistant" || role == "admin") return "ai";
+  if (role == "system") return "system";
   throw new Error(`Unsupported role: ${role}`);
 };
 
@@ -73,32 +75,27 @@ export default class BedrockProvider
   originalId = BedrockProvider.id;
   default_values = default_values;
 
-  convertMessage(m: Message): any {
+  convertMessage(m: Message): ChatMessage {
     logger(m.role);
     logger(m.content);
     if (typeof m.content == "string") {
-      return { role: roleMap(m.role), content: m.content };
+      return { role: roleMap(m.role), message: m.content };
     }
-    const content = m.content.map((c) => {
+    const text: string[] = [];
+    const images: string[] = [];
+    const content = m.content.forEach((c) => {
       if (c.type == "text") {
-        return { text: c.text };
+        text.push(c.text);
       } else if (c.type == "image_url") {
         if (!c.image_url?.url || !(c.image_url.url.indexOf("base64") >= 0))
           return;
-
-        return {
-          image: {
-            format: c.image_url.url.split(";base64")[0].split("/")[1],
-            source: {
-              bytes: Buffer.from(c.image_url.url.split("base64,")[1], "base64"),
-            },
-          },
-        };
+        images.push(c.image_url.url);
       }
     });
     return {
       role: roleMap(m.role),
-      content,
+      message: text.join("\n"),
+      images,
     };
   }
 
@@ -126,6 +123,12 @@ export default class BedrockProvider
         region: config.region,
         credentials,
       });
+      const fm = fromModelId(config.model, {
+        client,
+        maxTokenCount: reqParams.max_tokens,
+        stopSequences: reqParams.stop ?? [],
+        temperature: reqParams.temperature,
+      });
 
       if (!Platform.isDesktop) {
         return "";
@@ -134,31 +137,18 @@ export default class BedrockProvider
       const converse_messages = messages.map((m) => this.convertMessage(m));
       logger("messages conv", converse_messages);
       if (!stream) {
-        const resp = await client.send(
-          new ConverseCommand({
-            modelId: config.model,
-            messages: converse_messages,
-          })
-        );
+        const resp = await fm.chat(converse_messages);
         logger(resp);
-
-        return resp.output?.message?.content![0].text ?? "";
+        return resp.message;
       } else {
-        const resp = await client.send(
-          new ConverseStreamCommand({
-            modelId: config.modelId,
-            messages: converse_messages,
-          })
-        );
-        logger(resp);
-        if (resp.stream) {
-          for await (const token of resp.stream) {
-            const tokenText = token.contentBlockDelta?.delta?.text ?? "";
-            await onToken?.(tokenText, first);
-            allText += tokenText;
+        const resp = await fm.chatStream(converse_messages);
+        if (resp) {
+          for await (const token of resp) {
+            await onToken?.(token, first);
+            allText += token;
             first = false;
           }
-
+          logger(allText);
           return allText;
         } else {
           throw new Error("Stream not supported");
@@ -188,7 +178,12 @@ export default class BedrockProvider
         region: config.region,
         credentials,
       });
-
+      const fm = fromModelId(config.model, {
+        client,
+        maxTokenCount: reqParams.max_tokens,
+        stopSequences: reqParams.stop ?? [],
+        temperature: reqParams.temperature,
+      });
       if (!Platform.isDesktop) {
         return [""];
       }
@@ -200,19 +195,10 @@ export default class BedrockProvider
       const suggestions = [];
       logger("message", messages);
       while (i++ < (reqParams.n ?? 1)) {
-        const resp = await client.send(
-          new ConverseCommand({
-            modelId: config.model,
-            messages: converse_messages,
-            system: [{ text: "Complete the user sentence" }],
-            inferenceConfig: {
-              stopSequences: [...(reqParams.stop ?? []), ":"],
-            },
-          })
-        );
-        logger(resp);
-        if (resp.output?.message?.content![0]?.text)
-          suggestions.push(resp.output?.message?.content![0]?.text);
+        const resp = await fm.chat(converse_messages, {
+          stopSequences: [...(reqParams.stop ?? []), ":"],
+        });
+        if (resp.message) suggestions.push(resp.message);
       }
 
       return suggestions;

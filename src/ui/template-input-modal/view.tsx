@@ -9,7 +9,7 @@ import TextGeneratorPlugin from "#/main";
 const Form = withTheme(Theme);
 
 export default function TemplateInputModalView(props: {
-  p: { plugin: TextGeneratorPlugin; close?: Function };
+  p: { plugin: TextGeneratorPlugin; close?: () => void };
   labels: string[];
   templateContext: any;
   onSubmit: any;
@@ -40,6 +40,7 @@ export default function TemplateInputModalView(props: {
           };
           basicUi[l] = {
             "ui:widget": "textarea",
+            "ui:autofocus": true,
             props: {
               className: "w-full",
             },

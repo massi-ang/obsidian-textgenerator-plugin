@@ -42,32 +42,16 @@ export class TemplatesModal extends FuzzySuggestModal<PromptTemplate> {
 
   // Renders each suggestion item.
   renderSuggestion(template: FuzzyMatch<PromptTemplate>, el: HTMLElement) {
-    logger("renderSuggestion", template);
-    el.createEl("div", { text: template.item.name });
-    el.createEl("small", {
-      text: template.item.description?.substring(0, 150),
-      cls: "plug-tg-text-sm plug-tg-ml-6",
-    });
-    el.createEl("div", {});
-    el.createEl("small", { text: template.item.path, cls: "path" });
-    logger("renderSuggestion end", template);
+    // logger("renderSuggestion", template);
+    // el.createEl("div", { text: template.item.name });
+    // el.createEl("small", {
+    //   text: template.item.description?.substring(0, 150),
+    //   cls: "plug-tg-text-sm plug-tg-ml-6",
+    // });
+    // el.createEl("div", {});
+    // el.createEl("small", { text: template.item.path, cls: "path" });
+    // logger("renderSuggestion end", template);
   }
-
-  // getSuggestions(query: string): FuzzyMatch<PromptTemplate & { id: string; }>[] {
-  //   const items = this.getItems() as (PromptTemplate & { id: string; })[];
-  //   const queryString = query.toLowerCase();
-
-  //   const itms = items
-  //     .map((item) => ({
-  //       item: { ...item, id: item.path + item.promptId },
-  //       match: this.calculateMatchScore(item, queryString),
-  //     }))
-  //     .sort((a, b) => b.match - a.match); // Sort by match score in descending order
-
-  //   console.log({ query, first: itms[0]?.item?.name });
-
-  //   return itms as any;
-  // }
 
   calculateMatchScore(
     item: PromptTemplate & { id: string },

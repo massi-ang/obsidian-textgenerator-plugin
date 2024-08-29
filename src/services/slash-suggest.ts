@@ -48,7 +48,7 @@ export class SlashSuggest extends EditorSuggest<PromptTemplate> {
     const modal = new TemplatesModal(
       this.app,
       this.plugin,
-      async (result) => { },
+      async (result) => {},
       "Choose a template"
     );
 
@@ -81,7 +81,7 @@ export class SlashSuggest extends EditorSuggest<PromptTemplate> {
 
     activeView.editor.replaceRange("", value.context.start, value.context.end);
 
-    await this.plugin.textGenerator.tempalteToModal({
+    await this.plugin.textGenerator.templateToModal({
       params: {},
       templatePath: value.path,
       editor: CM,

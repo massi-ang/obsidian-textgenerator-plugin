@@ -7,7 +7,7 @@ import {
   NewTabDirection,
 } from "../types";
 import debug from "debug";
-const logger = debug("textgenerator:setModel");
+const logger = debug("textgenerator:utils");
 
 export function makeId(length: number) {
   logger("makeId");
@@ -201,10 +201,13 @@ export function mapMessagesToLangchainMessages(
   messages: Message[]
 ): BaseMessage[] {
   return messages.map((msg) => {
-    const msgF = typeof msg.content == "string" ? msg.content : {
-      name: msg.role,
-      content: msg.content
-    }
+    const msgF =
+      typeof msg.content == "string"
+        ? msg.content
+        : {
+            name: msg.role,
+            content: msg.content,
+          };
 
     switch (msg.role?.toLocaleLowerCase()) {
       case "system":
@@ -456,7 +459,7 @@ export function debounce<T extends unknown[], R>(
   };
 }
 
-export function getFilePathByName(name: string): string | undefined {
+export function getFilePathByName(name: string, app: App): string | undefined {
   return app.metadataCache.getFirstLinkpathDest(name, "")?.path;
 }
 

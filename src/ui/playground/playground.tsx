@@ -112,7 +112,7 @@ export default function ChatComp(props: {
         requestParams: {
           signal: abortController.signal,
         },
-      }
+      };
 
       const result = await props.plugin.contextManager.execDataview(
         await Handlebars.compile(
@@ -120,7 +120,7 @@ export default function ChatComp(props: {
         )({
           ...context.options,
           templatePath: "default/default",
-          inputContext
+          inputContext,
         })
       );
 
@@ -144,9 +144,10 @@ export default function ChatComp(props: {
     } catch (err: any) {
       console.error(err);
       setAnswer(
-        `ERR: ${err?.message?.replace("stack:", "\n\n\n\nMore Details") ||
-        err.message ||
-        err
+        `ERR: ${
+          err?.message?.replace("stack:", "\n\n\n\nMore Details") ||
+          err.message ||
+          err
         }`
       );
     } finally {
@@ -168,13 +169,14 @@ export default function ChatComp(props: {
       className="plug-tg-flex plug-tg-h-full plug-tg-w-full plug-tg-flex-col plug-tg-gap-2"
       onSubmit={handleSubmit}
     >
-
-      <div className={clsx(
-        "plug-tg-flex plug-tg-min-h-[200px] plug-tg-w-full plug-tg-resize-y plug-tg-flex-col plug-tg-justify-end plug-tg-gap-2 plug-tg-overflow-x-hidden plug-tg-overflow-y-scroll plug-tg-bg-gray-400/10 plug-tg-pb-2 plug-tg-outline-1",
-        {
-          "plug-tg-tooltip plug-tg-tooltip-bottom": warn,
-        }
-      )}>
+      <div
+        className={clsx(
+          "plug-tg-flex plug-tg-min-h-[200px] plug-tg-w-full plug-tg-resize-y plug-tg-flex-col plug-tg-justify-end plug-tg-gap-2 plug-tg-overflow-x-hidden plug-tg-overflow-y-scroll plug-tg-bg-gray-400/10 plug-tg-pb-2 plug-tg-outline-1",
+          {
+            "plug-tg-tooltip plug-tg-tooltip-bottom": warn,
+          }
+        )}
+      >
         <CodeEditor value={input} setValue={(str) => setInput(str)} />
       </div>
       {/* <textarea

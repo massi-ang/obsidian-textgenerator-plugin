@@ -573,12 +573,6 @@ export default class ContextManager {
           tfile = await this.app.vault.getFileByPath(
             fspath.join(attachmentFolderPath, path)
           );
-        }
-        if (!tfile) {
-          // try to find in attachment folder, base user's preferences
-          tfile = await this.app.vault.getFileByPath(
-            fspath.join(attachmentFolderPath, "Images", path)
-          );
           if (!tfile) continue;
         }
 
@@ -842,7 +836,7 @@ export default class ContextManager {
 
       if (!link.link) continue;
 
-      const path = getFilePathByName(link.link);
+      const path = getFilePathByName(link.link, this.app);
 
       if (!path) continue;
 

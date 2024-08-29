@@ -90,7 +90,7 @@ export default class TextGeneratorPlugin extends Plugin {
 
       this.defaultSettings = DEFAULT_SETTINGS;
       await this.loadSettings();
-
+      logger("settings", this.settings);
       // register managers
       this.versionManager = new VersionManager(this);
       await this.versionManager.load();
