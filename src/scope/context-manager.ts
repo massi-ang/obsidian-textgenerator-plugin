@@ -12,7 +12,6 @@ import {
   walkUntilTrigger,
 } from "../utils";
 import debug from "debug";
-const logger = debug("textgenerator:ContextManager");
 import Helpersfn, { Handlebars } from "../helpers/handlebars-helpers";
 import {
   ContentExtractor,
@@ -33,6 +32,8 @@ import mime from "mime-types";
 import { InputOptions } from "#/lib/models";
 import { MessageContent } from "@langchain/core/messages";
 
+const logger = debug("textgenerator:ContextManager");
+
 interface CodeBlock {
   type: string;
   content: string;
@@ -43,7 +44,7 @@ type CodeBlockProcessor = (block: CodeBlock) => Promise<string>;
 
 export interface ContextTemplate {
   inputTemplate: HandlebarsTemplateDelegate<any>;
-  outputTemplate: HandlebarsTemplateDelegate<any>;
+  outputTemplate?: HandlebarsTemplateDelegate<any>;
 }
 
 export interface InputContext {
@@ -146,15 +147,18 @@ export default class ContextManager {
           templatePath: "",
         };
 
-      const { context, inputTemplate, outputTemplate } =
-        await this.templateFromPath(templatePath, options, templateContent);
+      const { context, template } = await this.templateFromPath(
+        templatePath,
+        options,
+        templateContent
+      );
 
       logger("Context Template", { context, options });
 
       return {
         context,
         options,
-        template: { inputTemplate, outputTemplate: outputTemplate as any },
+        template: template,
         templatePath: props.templatePath,
       };
     } else {
@@ -216,15 +220,20 @@ export default class ContextManager {
         }
       );
 
-      const { context, inputTemplate, outputTemplate } =
-        await this.templateFromPath(templatePath, options);
+      const { context, template } = await this.templateFromPath(
+        templatePath,
+        options
+      );
 
-      logger("Context Template", { context, options });
+      logger("Context Template", {
+        context,
+        options,
+      });
 
       contexts.push({
         context,
         options,
-        template: { inputTemplate, outputTemplate },
+        template: template,
         templatePath,
       } as InputContext);
 
@@ -249,55 +258,6 @@ export default class ContextManager {
 
     return contexts;
   }
-
-  // DEPRICATED
-  // extractVariablesFromTemplate(templateContent: string): string[] {
-  //   const ast: hbs.AST.Program =
-  //     Handlebars.parseWithoutProcessing(templateContent);
-
-  //   const extractVariablesFromBody = (
-  //     body: hbs.AST.Statement[],
-  //     eachContext: string | null = null
-  //   ): string[] => {
-  //     return body
-  //       .flatMap((statement: hbs.AST.Statement) => {
-  //         if (statement.type === "MustacheStatement") {
-  //           const moustacheStatement: hbs.AST.MustacheStatement =
-  //             statement as hbs.AST.MustacheStatement;
-  //           const paramsExpressionList =
-  //             moustacheStatement.params as hbs.AST.PathExpression[];
-  //           const pathExpression =
-  //             moustacheStatement.path as hbs.AST.PathExpression;
-  //           const fullPath = eachContext
-  //             ? `${eachContext}.${pathExpression.original}`
-  //             : pathExpression.original;
-
-  //           return paramsExpressionList[0]?.original || fullPath;
-  //         } else if (
-  //           statement.type === "BlockStatement" &&
-  //           // @ts-ignore
-  //           statement.path.original === "each"
-  //         ) {
-  //           const blockStatement: hbs.AST.BlockStatement =
-  //             statement as hbs.AST.BlockStatement;
-  //           const eachVariable = blockStatement.path.original;
-  //           // @ts-ignore
-  //           const eachContext = blockStatement.params[0]?.original;
-
-  //           return extractVariablesFromBody(
-  //             blockStatement.program.body,
-  //             eachContext
-  //           );
-  //         } else {
-  //           return [];
-  //         }
-  //       })
-  //       .filter((value, index, self) => self.indexOf(value) === index);
-  //   };
-
-  //   const handlebarsVariables = extractVariablesFromBody(ast.body);
-  //   return handlebarsVariables;
-  // }
 
   async getTemplateContext(props: {
     editor?: ContentManager;
@@ -327,7 +287,7 @@ export default class ContextManager {
     const contextObj = await this.getDefaultContext(
       props.editor,
       undefined,
-      contextTemplate + templateContent
+      templateContent
     );
 
     const context = contextObj._variables["context"]
@@ -388,7 +348,8 @@ export default class ContextManager {
     filePath?: string,
     contextTemplate?: string
   ) {
-    logger("getDefaultContext", editor, contextTemplate);
+    logger("getDefaultContext");
+    logger("contextTemplate", contextTemplate);
 
     const context: AvailableContext = {
       keys: {},
@@ -491,7 +452,7 @@ export default class ContextManager {
           _dVCache
         );
 
-    logger("getDefaultContext", { context });
+    logger("getDefaultContext_end", { context });
     return context;
   }
 
@@ -649,7 +610,7 @@ export default class ContextManager {
             noEscape: true,
           })
         )
-      : null;
+      : undefined;
 
     const outputTemplate = outputContent
       ? this.handlebarsMiddleware(
@@ -657,7 +618,7 @@ export default class ContextManager {
             noEscape: true,
           })
         )
-      : null;
+      : undefined;
 
     return {
       preRunnerTemplate,
@@ -687,8 +648,8 @@ export default class ContextManager {
     templatePath: string,
     options: any,
     _templateContent?: string
-  ) {
-    logger("templateFromPath", templatePath, options);
+  ): Promise<{ context: string; template: ContextTemplate }> {
+    logger("templateFromPath", { templatePath, options });
     const templateFile =
       await this.app.vault.getAbstractFileByPath(templatePath);
 
@@ -711,10 +672,11 @@ export default class ContextManager {
       n.hide();
     }
 
+    // Apply the Mustache template
     const input = await templates.inputTemplate(options);
 
-    logger("templateFromPath", { input });
-    return { context: input, ...templates };
+    logger("templateFromPath_end", input);
+    return { context: input, template: templates };
   }
 
   async getTemplateCustomInputConfig(templatePath: string) {

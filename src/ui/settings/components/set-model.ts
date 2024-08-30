@@ -39,5 +39,6 @@ export class SetModel extends FuzzySuggestModal<Model> {
     logger("onChooseItem", model);
     new Notice(`Selected ${model.id}`);
     this.onChoose(model.id);
+    this.close();
   }
 }

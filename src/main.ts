@@ -49,6 +49,7 @@ import { PlaygroundView, VIEW_Playground_ID } from "./ui/playground";
 import ContentManagerCls from "./scope/content-manager";
 import ContextManager from "./scope/context-manager";
 import TGBlock from "./services/tgBlock";
+import { SetModel } from "./ui/settings/components/set-model";
 
 //    @ts-ignore
 let safeStorage: Electron.SafeStorage;
@@ -57,7 +58,7 @@ if (Platform.isDesktop) {
   // @ts-ignore
   safeStorage = require("electron")?.remote?.safeStorage;
 }
-debug.enable("*"); // TODO: have a setting for this
+debug.enable("textgenerator:*"); // TODO: have a setting for this
 const logger = debug("textgenerator:main");
 
 export default class TextGeneratorPlugin extends Plugin {
@@ -75,6 +76,7 @@ export default class TextGeneratorPlugin extends Plugin {
 
   textGeneratorIconItem: HTMLElement = createDiv();
   statusBarTokens: HTMLElement = createDiv();
+  modelBar: HTMLElement = createDiv();
 
   notice: Notice = undefined as any;
   commands: Commands = undefined as any;
@@ -127,6 +129,7 @@ export default class TextGeneratorPlugin extends Plugin {
 
       // add status bar items
       this.textGeneratorIconItem = this.addStatusBarItem();
+      this.modelBar = this.addStatusBarItem();
       this.statusBarTokens = this.addStatusBarItem();
       this.statusBarItemEl = this.addStatusBarItem();
 
@@ -338,7 +341,37 @@ export default class TextGeneratorPlugin extends Plugin {
     if (this.settings.showStatusBar) {
       this.textGeneratorIconItem.innerHTML = "";
       this.statusBarTokens.innerHTML = "";
+      this.modelBar.innerHTML = "";
+      this.modelBar.addClass("mod-clickable");
+      this.modelBar.addEventListener("click", async () => {
+        // @ts-ignore
+        try {
+          new SetModel(
+            this.app,
+            this,
+            async (selectedModel) => {
+              console.log(selectedModel);
+              const provider = this.settings.selectedProvider as string;
+              if (!provider || !this.settings.LLMProviderOptions[provider])
+                return;
 
+              this.settings.LLMProviderOptions[provider].model = selectedModel;
+              await this.saveSettings();
+            },
+            "Choose a LLM"
+          ).open();
+        } catch (error) {
+          this.handelError(error);
+        }
+        // @ts-ignore
+        // await this.app.setting
+        //   .openTabById("obsidian-textgenerator-plugin")
+        //   .display();
+      });
+      const span1 = document.createElement("span");
+
+      span1.textContent = `${this.textGenerator.LLMProvider.getSettings()?.model ?? "No model selected"}`;
+      this.modelBar.append(span1);
       if (processing) {
         const span = document.createElement("span");
         span.addClasses(["plug-tg-loading", "dots"]);

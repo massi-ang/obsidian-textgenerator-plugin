@@ -237,7 +237,7 @@ export default class TextGenerator extends RequestHandler {
               }
             }
 
-            logger("generateStreamInEditor message", { content });
+            //logger("generateStreamInEditor message", { content });
 
             streamHandler.insert(content);
 

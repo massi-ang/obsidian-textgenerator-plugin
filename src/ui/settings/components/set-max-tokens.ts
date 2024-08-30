@@ -1,7 +1,9 @@
 import { App, Modal, Setting } from "obsidian";
 import TextGeneratorPlugin from "src/main";
 import debug from "debug";
+
 const logger = debug("textgenerator:SetMaxTokens");
+
 export class SetMaxTokens extends Modal {
   result: string;
   plugin: TextGeneratorPlugin;

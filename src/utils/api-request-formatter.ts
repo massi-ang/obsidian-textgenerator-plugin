@@ -6,7 +6,9 @@ import debug from "debug";
 import { transformStringsToChatFormat } from ".";
 import { LLMConfig } from "../LLMProviders/interface";
 import { AI_MODELS } from "#/constants";
+
 const logger = debug("textgenerator:ReqFormatter");
+
 export default class ReqFormatter {
   plugin: TextGeneratorPlugin;
   app: App;
@@ -40,44 +42,58 @@ export default class ReqFormatter {
     _params: Partial<TextGeneratorSettings & { prompt: string }>,
     insertMetadata: boolean,
     templatePath = "",
-    additionnalParams: {
+    additionalParams: {
       reqParams?: RequestInit;
       bodyParams?: any;
     } = {}
   ) {
-    logger("prepareReqParameters", _params, insertMetadata, templatePath);
+    logger("getRequestParameters start", _params, insertMetadata, templatePath);
 
     const frontmatter: any = this.getFrontmatter(templatePath, insertMetadata);
-    const providerId = this.plugin.textGenerator.LLMRegestry.get(frontmatter?.config?.provider)?.id as string
-
+    const providerId = this.plugin.textGenerator.LLMRegestry.get(
+      frontmatter?.config?.provider
+    )?.id as string;
+    logger("frontmatter", frontmatter);
     const params = {
       ...this.plugin.settings,
       ...this.plugin.defaultSettings.LLMProviderOptions[
-      providerId ||
-      (this.plugin.settings.selectedProvider as any)],
-      ...this.plugin.settings.LLMProviderOptions[
-      providerId ||
-      (this.plugin.settings.selectedProvider as any)
+        providerId || (this.plugin.settings.selectedProvider as any)
       ],
-      ...this.getFrontmatter(templatePath, insertMetadata),
+      ...this.plugin.settings.LLMProviderOptions[
+        providerId || (this.plugin.settings.selectedProvider as any)
+      ],
+      ...frontmatter,
       ..._params,
     };
 
-    if (
-      !this.plugin.textGenerator.LLMProvider ||
-      frontmatter.config?.provider !== this.plugin.textGenerator.LLMProvider.id
-    )
-      // load the provider
-      await this.plugin.textGenerator.loadllm(frontmatter.config?.provider);
-
-
-
-    if (!this.plugin.textGenerator.LLMProvider) throw "LLM Provider not intialized";
-
     params.model = params.model?.toLowerCase();
 
-    if (params.includeAttachmentsInRequest ?? params.advancedOptions?.includeAttachmentsInRequest)
-      params.prompt = await this.plugin.contextManager.splitContent(params.prompt, params.noteFile, (AI_MODELS[params.model] || AI_MODELS["models/" + params.model])?.inputOptions || {})
+    if (
+      !this.plugin.textGenerator.LLMProvider ||
+      (frontmatter.config?.model &&
+        frontmatter.config.model.toLowerCase() !== params.model)
+    ) {
+      // load the provider
+      logger("Setting the model", frontmatter.config?.model);
+      const provider = AI_MODELS[frontmatter.config?.model].llm[0];
+      params.model = frontmatter.config?.model.toLowerCase();
+
+      await this.plugin.textGenerator.loadllm(provider);
+    }
+
+    if (!this.plugin.textGenerator.LLMProvider)
+      throw "LLM Provider not intialized";
+
+    if (
+      params.includeAttachmentsInRequest ??
+      params.advancedOptions?.includeAttachmentsInRequest
+    )
+      params.prompt = await this.plugin.contextManager.splitContent(
+        params.prompt,
+        params.noteFile,
+        (AI_MODELS[params.model] || AI_MODELS["models/" + params.model])
+          ?.inputOptions || {}
+      );
 
     let bodyParams: Partial<LLMConfig & { prompt: string }> & {
       messages: Message[];
@@ -96,15 +112,19 @@ export default class ReqFormatter {
       (typeof params.prompt == "object" ||
         params.prompt?.replaceAll?.("\n", "").trim().length)
     ) {
-      bodyParams.messages.push(this.plugin.textGenerator.LLMProvider.makeMessage(params.prompt || "", "user"));
+      bodyParams.messages.push(
+        this.plugin.textGenerator.LLMProvider.makeMessage(
+          params.prompt || "",
+          "user"
+        )
+      );
     }
-
 
     let reqParams: RequestInit & {
       // url: string,
       extractResult?: any;
     } = {
-      ...additionnalParams?.reqParams,
+      ...additionalParams?.reqParams,
     };
 
     // if (!insertMetadata) {
@@ -126,7 +146,6 @@ export default class ReqFormatter {
       providerOptions?: any;
     } = {};
 
-
     // on insertMetadata
     if (frontmatter) {
       // -- provider options
@@ -145,7 +164,12 @@ export default class ReqFormatter {
         }
 
         if (params.system || params.config?.system) {
-          bodyParams.messages.unshift(this.plugin.textGenerator.LLMProvider.makeMessage(params.system || params.config.system, "system"));
+          bodyParams.messages.unshift(
+            this.plugin.textGenerator.LLMProvider.makeMessage(
+              params.system || params.config.system,
+              "system"
+            )
+          );
         }
       }
 
@@ -194,7 +218,7 @@ export default class ReqFormatter {
       this.plugin.handelError("No valid Metadata (YAML front matter) found!");
     }
 
-    logger("prepareReqParameters", { bodyParams, reqParams });
+    logger("getRequestParameters end", { bodyParams, reqParams });
 
     return {
       bodyParams,

@@ -46,7 +46,7 @@ const untangableVars = [
 export const default_values = {
   ...baseDefaultValues,
   region: "us-west-2",
-  modelId: "anthropic.claude-3-sonnet-20240229-v1:0",
+  model: "anthropic.claude-3-sonnet-20240229-v1:0",
   custom_header: "",
   custom_body: "",
   sanatization_response: "",
@@ -133,13 +133,15 @@ export default class BedrockProvider
         credentials,
       });
 
+      const model = reqParams?.model ?? config.model;
+
       if (
-        config.model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V1 ||
-        config.model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V2_0 ||
-        config.model == ImageModels.STABILITY_STABLE_DIFFUSION_XL_V1
+        model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V1 ||
+        model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V2_0 ||
+        model == ImageModels.STABILITY_STABLE_DIFFUSION_XL_V1
       ) {
         return await this.generateImage(
-          config.model,
+          model,
           client,
           messages,
           reqParams,
@@ -147,7 +149,7 @@ export default class BedrockProvider
         );
       }
 
-      const fm = fromModelId(config.model, {
+      const fm = fromModelId(model, {
         client,
         maxTokenCount: reqParams.max_tokens,
         stopSequences: reqParams.stop ?? [],
@@ -229,7 +231,8 @@ export default class BedrockProvider
         region: config.region,
         credentials,
       });
-      const fm = fromModelId(config.model, {
+      const model = reqParams.model ?? config.model;
+      const fm = fromModelId(model, {
         client,
         maxTokenCount: reqParams.max_tokens,
         stopSequences: reqParams.stop ?? [],
