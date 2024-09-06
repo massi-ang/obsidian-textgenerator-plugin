@@ -89,7 +89,7 @@ export default function OptionsSetting(props: { register: Register }) {
                 value={
                   "" +
                   global.plugin.settings.options[
-                  key as keyof typeof global.plugin.settings.options
+                    key as keyof typeof global.plugin.settings.options
                   ]
                 }
                 setValue={async (val) => {

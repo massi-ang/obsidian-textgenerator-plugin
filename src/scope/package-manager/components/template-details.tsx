@@ -48,9 +48,9 @@ export default function TemplateDetails(inProps: {
         ownedOrReq:
           pkg?.price || !pkg?.packageId
             ? {
-              allowed: true,
-              oneRequired: [],
-            }
+                allowed: true,
+                oneRequired: [],
+              }
             : await packageManager.validateOwnership(pkg?.packageId),
       });
 
@@ -60,13 +60,13 @@ export default function TemplateDetails(inProps: {
         ownedOrReq:
           pkg?.price || !pkg?.packageId
             ? {
-              allowed: true,
-              oneRequired: [],
-            }
+                allowed: true,
+                oneRequired: [],
+              }
             : {
-              allowed: false,
-              oneRequired: [],
-            },
+                allowed: false,
+                oneRequired: [],
+              },
       });
 
       packageManager.getInstalledPackageById(packageId).then((installed) => {
@@ -85,8 +85,8 @@ export default function TemplateDetails(inProps: {
     try {
       const ownedOrReq = props.installed
         ? {
-          allowed: true,
-        }
+            allowed: true,
+          }
         : await packageManager.validateOwnership(packageId);
 
       setProps((props) => ({
@@ -196,7 +196,6 @@ export default function TemplateDetails(inProps: {
   async function update() {
     setInstalling(true);
     try {
-
       await packageManager.updatePackage(packageId);
       updateLocalView();
       updateView();
@@ -204,7 +203,7 @@ export default function TemplateDetails(inProps: {
     } catch (err: any) {
       throw err;
     } finally {
-      setInstalling(false)
+      setInstalling(false);
     }
   }
 

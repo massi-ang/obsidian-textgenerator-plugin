@@ -45,7 +45,9 @@ export default class LangchainPalmProvider
   }
 
   async load() {
-    const { ChatGooglePaLM } = await import("@langchain/community/chat_models/googlepalm");
+    const { ChatGooglePaLM } = await import(
+      "@langchain/community/chat_models/googlepalm"
+    );
     this.llmClass = ChatGooglePaLM;
   }
 

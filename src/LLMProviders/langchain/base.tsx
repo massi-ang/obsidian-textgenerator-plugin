@@ -16,20 +16,15 @@ import LLMProviderInterface, { LLMConfig } from "../interface";
 import { PromptTemplate } from "@langchain/core/prompts";
 import type { BaseMessageChunk } from "@langchain/core/messages";
 
-import {
-  chains,
-  splitters,
-  Message,
-  AI_MODELS,
-} from "../refs";
+import { chains, splitters, Message, AI_MODELS } from "../refs";
 import { Callbacks } from "@langchain/core/callbacks/manager";
 
 const logger = debug("textgenerator:LangchainProvider");
 
-
 export default class LangchainProvider
   extends BaseProvider
-  implements LLMProviderInterface {
+  implements LLMProviderInterface
+{
   static id = "default (Langchain)";
   static slug = "default" as any;
   static provider = "Langchain";
@@ -84,30 +79,32 @@ export default class LangchainProvider
       ...this.defaultHeaders,
     };
 
-
     const Fetch = this.plugin.textGenerator.proxyService.getFetch(
       this.corsBypass ||
-      this.default_values.corsBypass ||
-      options.otherOptions.corsBypass
-    )
+        this.default_values.corsBypass ||
+        options.otherOptions.corsBypass
+    );
 
-    const llm = new (this.llmClass as typeof ChatOpenAI)(this.getConfig(options), {
-      basePath: options.basePath?.length
-        ? options.basePath.endsWith("/")
-          ? options.basePath.substring(0, options.basePath.length - 1)
-          : options.basePath
-        : undefined,
+    const llm = new (this.llmClass as typeof ChatOpenAI)(
+      this.getConfig(options),
+      {
+        basePath: options.basePath?.length
+          ? options.basePath.endsWith("/")
+            ? options.basePath.substring(0, options.basePath.length - 1)
+            : options.basePath
+          : undefined,
 
-      // @ts-ignore
-      clientOptions: {
+        // @ts-ignore
+        clientOptions: {
+          dangerouslyAllowBrowser: true,
+        },
+
         dangerouslyAllowBrowser: true,
-      },
-
-      dangerouslyAllowBrowser: true,
-      defaultQuery: options.bodyParams,
-      fetch: Fetch,
-      defaultHeaders: headers,
-    });
+        defaultQuery: options.bodyParams,
+        fetch: Fetch,
+        defaultHeaders: headers,
+      }
+    );
 
     // @ts-ignore
     llm.clientOptions ??= {};
@@ -122,14 +119,14 @@ export default class LangchainProvider
       ...this.cleanConfig(this.plugin.settings),
       ...this.cleanConfig(
         this.plugin.settings.LLMProviderOptions[
-        this.id as keyof typeof this.plugin.settings
+          this.id as keyof typeof this.plugin.settings
         ]
       ),
       ...this.cleanConfig(options.otherOptions),
       ...this.cleanConfig(options),
       otherOptions: this.cleanConfig(
         this.plugin.settings.LLMProviderOptions[
-        this.id as keyof typeof this.plugin.settings
+          this.id as keyof typeof this.plugin.settings
         ]
       ),
     };
@@ -168,15 +165,15 @@ export default class LangchainProvider
           {
             ...(!!onToken &&
               !!params.stream && {
-              async handleLLMNewToken(token: string) {
-                const d = first;
-                first = false;
-                alreadyBegainGenerating = true;
-                const tk = (await onToken(token, d)) || token;
-                allText += tk;
-                result += tk;
-              },
-            }),
+                async handleLLMNewToken(token: string) {
+                  const d = first;
+                  first = false;
+                  alreadyBegainGenerating = true;
+                  const tk = (await onToken(token, d)) || token;
+                  allText += tk;
+                  result += tk;
+                },
+              }),
 
             handleLLMEnd() {
               if (params.stream) s(allText);
@@ -211,8 +208,8 @@ export default class LangchainProvider
               configurable: {
                 fetch: this.plugin.textGenerator.proxyService.getFetch(
                   this.corsBypass ||
-                  this.default_values.corsBypass ||
-                  customConfig.corsBypass
+                    this.default_values.corsBypass ||
+                    customConfig.corsBypass
                 ),
               },
             }
@@ -223,11 +220,15 @@ export default class LangchainProvider
           let r: any;
           let res: BaseMessageChunk = {} as any;
 
-          console.log({ messages, k: "invoked", llmpredict: reqParams.llmPredict, llmPredict2: this.llmPredict })
+          console.log({
+            messages,
+            k: "invoked",
+            llmpredict: reqParams.llmPredict,
+            llmPredict2: this.llmPredict,
+          });
           if (reqParams.llmPredict || this.llmPredict)
             r = await (llm as any as ChatOpenAI).invoke(
-              chatToString(messages)
-              ,
+              chatToString(messages),
               {
                 signal: params.requestParams?.signal || undefined,
                 ...this.getReqOptions(params),
@@ -255,7 +256,11 @@ export default class LangchainProvider
           else
             result = res.content
               .map((c) =>
-                c.type == "image_url" ? `![](${c.image_url})` : c.type == "text" ? c.text : ""
+                c.type == "image_url"
+                  ? `![](${c.image_url})`
+                  : c.type == "text"
+                    ? c.text
+                    : ""
               )
               .join("\n");
         }
@@ -298,10 +303,10 @@ export default class LangchainProvider
                     reqParams.llmPredict || this.llmPredict
                       ? [chatToString(messages)]
                       : [
-                        mapMessagesToLangchainMessages(
-                          messages
-                        ) as any as string,
-                      ],
+                          mapMessagesToLangchainMessages(
+                            messages
+                          ) as any as string,
+                        ],
                     {
                       signal: params.requestParams?.signal || undefined,
                       ...this.getReqOptions(params),
@@ -397,23 +402,24 @@ export default class LangchainProvider
   }
 }
 
-
-
 function contentToString(content: Message["content"]) {
-  return typeof content == "string" ? content : Object.values(content).join(' ')
+  return typeof content == "string"
+    ? content
+    : Object.values(content).join(" ");
 }
 
 function chatToString(messages: Message[] = []) {
   return messages.length > 1
     ? // user: test1
-    // assistant: test2
-    // ...
-    messages.map((msg) => {
-      return `${msg.role}:${contentToString(msg.content)}`
-    }).join("\n")
+      // assistant: test2
+      // ...
+      messages
+        .map((msg) => {
+          return `${msg.role}:${contentToString(msg.content)}`;
+        })
+        .join("\n")
     : // test1
-    contentToString(messages[0].content)
-    ;
+      contentToString(messages[0].content);
 }
 
 function getChain(chainName: string, llm: any, config: any) {

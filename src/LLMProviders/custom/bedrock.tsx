@@ -134,12 +134,16 @@ export default class BedrockProvider
       });
 
       const model = reqParams?.model ?? config.model;
-
+      logger("model", model);
       if (
         model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V1 ||
         model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V2_0 ||
-        model == ImageModels.STABILITY_STABLE_DIFFUSION_XL_V1
+        model == ImageModels.STABILITY_STABLE_DIFFUSION_XL_V1 ||
+        model == ImageModels.STABILITY_STABLE_IMAGE_CORE_V1_0 ||
+        model == ImageModels.STABILITY_STABLE_IMAGE_ULTRA_V1_0 ||
+        model == ImageModels.STABILITY_SD3_LARGE_V1_0
       ) {
+        logger("generate image", model);
         return await this.generateImage(
           model,
           client,
@@ -200,6 +204,7 @@ export default class BedrockProvider
       width: 1024,
       height: 1024,
     });
+    logger("images", images);
     const imageBytes = Buffer.from(images[0].split("base64,")[1], "base64");
     // @ts-ignore
     const attachmentFolderPath: string = this.plugin.app.vault.getConfig?.(

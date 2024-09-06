@@ -188,12 +188,12 @@ export default function LLMProviderController(props: {
                 className="plug-tg-input-sm"
                 placeholder={
                   global.plugin.textGenerator.LLMRegestry.UnProviderNames[
-                  selectedLLMId
+                    selectedLLMId
                   ]
                 }
                 value={
                   global.plugin.textGenerator.LLMRegestry.UnProviderNames[
-                  selectedLLMId
+                    selectedLLMId
                   ]
                 }
                 setValue={async (val) => {

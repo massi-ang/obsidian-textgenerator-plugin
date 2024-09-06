@@ -64,7 +64,8 @@ export type CustomConfig = Record<keyof typeof default_values, string>;
 
 export default class AnthropicLegacyProvider
   extends CustomProvider
-  implements LLMProviderInterface {
+  implements LLMProviderInterface
+{
   static provider = "Custom";
   static id = "Anthropic Legacy (Custom)" as const;
   static slug = "anthropicLegacy" as const;

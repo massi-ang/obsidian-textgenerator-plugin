@@ -82,12 +82,12 @@ const choices = (data.choices || data).map(c=> c.message);
 return choices;`,
 };
 
-
 export type CustomConfig = Record<keyof typeof default_values, string>;
 
 export default class CustomProvider
   extends BaseProvider
-  implements LLMProviderInterface {
+  implements LLMProviderInterface
+{
   static provider = "Custom";
   static id = "Default (Custom)";
   static displayName = "Custom";
@@ -109,7 +109,6 @@ export default class CustomProvider
       CORSBypass?: boolean;
     }
   ) {
-
     const requestOptions: RequestInit = {
       method: params.method || "POST",
       headers: params.headers,
@@ -123,7 +122,9 @@ export default class CustomProvider
     let k;
 
     try {
-      k = await this.plugin.textGenerator.proxyService.getFetch(params.CORSBypass)(params.url, requestOptions)
+      k = await this.plugin.textGenerator.proxyService.getFetch(
+        params.CORSBypass
+      )(params.url, requestOptions);
     } catch (e: any) {
       k = e;
     }
@@ -161,23 +162,21 @@ export default class CustomProvider
         const decodedVal = decoder.decode(value, { stream: true });
 
         // backward compatibilty with the old way
-        const c = params.sanatization_streaming ||
+        const c =
+          params.sanatization_streaming ||
           this.default_values.sanatization_streaming;
-        const n = c.split('\n')
+        const n = c.split("\n");
         if (n[0]?.trim().startsWith("async")) {
           n.shift();
           n.pop();
         }
 
-        const chunkValue = await runJSInSandbox(
-          n.join("\n"),
-          {
-            plugin: this.plugin,
-            chunk: decodedVal,
-            data: decodedVal,
-            res: k
-          }
-        );
+        const chunkValue = await runJSInSandbox(n.join("\n"), {
+          plugin: this.plugin,
+          chunk: decodedVal,
+          data: decodedVal,
+          res: k,
+        });
 
         text += chunkValue || "";
         await params.onToken?.(chunkValue, isFirst);
@@ -195,31 +194,29 @@ export default class CustomProvider
         resJson = resText;
       }
 
-      const c = params.sanatization_response ||
+      const c =
+        params.sanatization_response ||
         this.default_values.sanatization_response;
-      const n = c.split('\n')
+      const n = c.split("\n");
       if (n[0]?.trim().startsWith("async")) {
         n.shift();
         n.pop();
       }
 
-      const rs = await runJSInSandbox(
-        n.join("\n"),
-        {
-          plugin: this.plugin,
-          res: k,
-          data: resJson
-        }
-      );
+      const rs = await runJSInSandbox(n.join("\n"), {
+        plugin: this.plugin,
+        res: k,
+        data: resJson,
+      });
 
       console.log(rs);
 
       return rs?.map((c: Message) =>
         c.type == "image_url"
           ? {
-            ...c,
-            content: `![](${c.image_url})\n${c.content || ""}`,
-          }
+              ...c,
+              content: `![](${c.image_url})\n${c.content || ""}`,
+            }
           : c
       );
     }
@@ -272,10 +269,10 @@ export default class CustomProvider
           headers: cleanConfig(
             JSON5.parse(
               "" +
-              (await Handlebars.compile(
-                handlebarData.custom_header ||
-                this.default_values.custom_header
-              )(handlebarData))
+                (await Handlebars.compile(
+                  handlebarData.custom_header ||
+                    this.default_values.custom_header
+                )(handlebarData))
             ) as any
           ),
 
@@ -283,9 +280,9 @@ export default class CustomProvider
             cleanConfig(
               JSON5.parse(
                 "" +
-                (await Handlebars.compile(
-                  handlebarData.custom_body || this.default_values.custom_body
-                )(handlebarData))
+                  (await Handlebars.compile(
+                    handlebarData.custom_body || this.default_values.custom_body
+                  )(handlebarData))
               )
             ) as any
           ),
@@ -310,7 +307,7 @@ export default class CustomProvider
         else {
           const choices = res as any;
           if (typeof choices == "string") resultContent = choices;
-          else resultContent = choices.map((c: any) => c.content).join("\n")
+          else resultContent = choices.map((c: any) => c.content).join("\n");
         }
 
         logger("generate end", {

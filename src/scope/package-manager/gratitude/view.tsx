@@ -25,8 +25,8 @@ export default function GratitudeView(p: { parent: GratitudeUI; data: any }) {
               <TemplateDetails
                 packageId={p.data.packageId}
                 packageManager={global.plugin.packageManager}
-                checkForUpdates={() => { }}
-                updateView={() => { }}
+                checkForUpdates={() => {}}
+                updateView={() => {}}
                 mini
               />
             </div>

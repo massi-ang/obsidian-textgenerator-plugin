@@ -54,43 +54,47 @@ export class YoutubeTranscript {
       }
 
       const detail = JSON.parse(
-        splittedHTML[1].split(',"videoDetails')[0].replace('\n', '')
+        splittedHTML[1].split(',"videoDetails')[0].replace("\n", "")
       ) as any;
-  
-      const captions = detail?.['playerCaptionsTracklistRenderer']
-  
+
+      const captions = detail?.["playerCaptionsTracklistRenderer"];
+
       if (!captions) {
         throw new Error("Transcript is disabled on this video");
       }
-  
-      if (!('captionTracks' in captions)) {
+
+      if (!("captionTracks" in captions)) {
         throw new Error("Transcript is disabled on this video");
       }
-  
+
       if (
         config?.lang &&
         !captions.captionTracks.some(
-          (track: { languageCode: string | undefined; }) => track.languageCode === config?.lang
+          (track: { languageCode: string | undefined }) =>
+            track.languageCode === config?.lang
         )
       ) {
         throw new Error("Transcript is disabled on this video");
       }
-  
+
       const transcriptURL = (
         config?.lang
           ? captions.captionTracks.find(
-              (track: { languageCode: string | undefined; }) => track.languageCode === config?.lang
+              (track: { languageCode: string | undefined }) =>
+                track.languageCode === config?.lang
             )
           : captions.captionTracks[0]
       ).baseUrl;
-  
+
       const transcriptBody = await request(transcriptURL);
       const results = [...transcriptBody.matchAll(RE_XML_TRANSCRIPT)];
       return results.map((result) => ({
         text: result[3],
         duration: parseFloat(result[2]),
         offset: parseFloat(result[1]),
-        lang: config?.lang ? config.lang : captions.captionTracks[0].languageCode,
+        lang: config?.lang
+          ? config.lang
+          : captions.captionTracks[0].languageCode,
       }));
     } catch (e) {
       throw new YoutubeTranscriptError(e);
@@ -110,7 +114,7 @@ export class YoutubeTranscript {
       return matchId[1];
     }
     throw new YoutubeTranscriptError(
-      'Impossible to retrieve Youtube video ID.'
+      "Impossible to retrieve Youtube video ID."
     );
   }
 }
