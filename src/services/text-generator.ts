@@ -371,7 +371,7 @@ export default class TextGenerator extends RequestHandler {
     logger("generatePrompt");
     const cursor = this.getCursor(editor);
 
-    let text = await this.LLMProvider.generate(
+    let text = await this.LLMProvider?.generate(
       [
         {
           role: "user",

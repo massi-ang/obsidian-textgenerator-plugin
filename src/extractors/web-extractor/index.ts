@@ -102,21 +102,19 @@ export default class WebPageExtractor extends Extractor {
     const elements = doc.getElementsByTagName("a");
 
     // Loop through each element and change the origin
-    if (elements) {
-      for (const el of elements) {
-        const currentHref = el.getAttribute("href");
-        if (currentHref?.startsWith("app://obsidian.md")) {
-          el.setAttribute(
-            "href",
-            new URL(new URL(currentHref).pathname, new URL(url).origin).href
-          );
-        }
-        if (currentHref?.startsWith("/")) {
-          el.setAttribute(
-            "href",
-            new URL(currentHref, new URL(url).origin).href
-          );
-        }
+    for (let i = 0; i < elements.length; i++) {
+      const currentHref = elements[i].getAttribute("href");
+      if (currentHref?.startsWith("app://obsidian.md")) {
+        elements[i].setAttribute(
+          "href",
+          new URL(new URL(currentHref).pathname, new URL(url).origin).href
+        );
+      }
+      if (currentHref?.startsWith("/")) {
+        elements[i].setAttribute(
+          "href",
+          new URL(currentHref, new URL(url).origin).href
+        );
       }
     }
 

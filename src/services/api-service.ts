@@ -19,8 +19,8 @@ export default class RequestHandler {
   reqFormatter: ReqFormatter;
   signalController?: AbortController;
 
-  LLMProvider?: LLMProviderInterface = undefined;
-  LLMRegestry?: LLMProviderRegistry<LLMProviderInterface> = undefined;
+  LLMProvider?: LLMProviderInterface;
+  LLMRegestry?: LLMProviderRegistry<LLMProviderInterface>;
 
   proxyService: ProxyService;
 
@@ -118,9 +118,13 @@ export default class RequestHandler {
   }
 
   async loadllm(name: string = this.plugin.settings.selectedProvider ?? "") {
-    const llmList = this.LLMRegestry.getList();
+    const llmList = this.LLMRegestry?.getList();
 
-    const llm = this.LLMRegestry.get(name) || this.LLMRegestry.get(llmList[0]);
+    if (!llmList?.length) {
+      throw new Error("No LLM providers found");
+    }
+    const llm =
+      this.LLMRegestry?.get(name) || this.LLMRegestry?.get(llmList[0]);
 
     if (llm && llm.id !== this.LLMProvider?.id) {
       if (Platform.isMobile && !llm.mobileSupport)
@@ -160,7 +164,7 @@ export default class RequestHandler {
       const { reqParams, bodyParams, provider, allParams } =
         await this.reqFormatter.getRequestParameters(
           {
-            ...this.LLMProvider.getSettings(),
+            ...this.LLMProvider?.getSettings(),
             ...settings,
             // @ts-ignore
             prompt: promp,
@@ -168,6 +172,9 @@ export default class RequestHandler {
           false
         );
 
+      if (!this.LLMProvider?.provider) {
+        throw new Error("No LLM provider selected");
+      }
       await providerOptionsValidator(
         this.LLMProvider.provider,
         provider.providerOptions
@@ -177,7 +184,7 @@ export default class RequestHandler {
         ? bodyParams.messages.map((m) => m.content).join(",")
         : provider.providerOptions.disableProvider
           ? ""
-          : await this.LLMProvider.generate(
+          : await this.LLMProvider?.generate(
               bodyParams.messages,
               {
                 ...allParams,
@@ -262,8 +269,11 @@ export default class RequestHandler {
           additionnalParams
         );
 
+      if (!this.LLMProvider?.provider) {
+        throw new Error("No LLM provider selected");
+      }
       await providerOptionsValidator(
-        this.LLMProvider.provider,
+        this.LLMProvider?.provider,
         provider.providerOptions
       );
 
@@ -279,7 +289,7 @@ export default class RequestHandler {
       const stream = async (
         onToken: Parameters<typeof this.LLMProvider.generate>[2],
         onError?: (error: any) => void
-      ): Promise<string> => {
+      ): Promise<string | undefined> => {
         try {
           const innerContext = {
             ...allParams,
@@ -289,7 +299,7 @@ export default class RequestHandler {
               ...reqParams,
               signal: additionnalParams.signal || this.signalController?.signal,
             },
-            otherOptions: this.LLMProvider.getSettings(),
+            otherOptions: this.LLMProvider?.getSettings(),
             streaming: true,
             llmPredict:
               bodyParams.messages?.length === 1 &&
@@ -301,7 +311,7 @@ export default class RequestHandler {
             provider.providerOptions.estimatingMode ||
             provider.providerOptions.disableProvider
               ? ""
-              : await this.LLMProvider.generate(
+              : await this.LLMProvider?.generate(
                   bodyParams.messages,
                   innerContext,
                   onToken,
@@ -392,7 +402,7 @@ export default class RequestHandler {
         })
       );
 
-      console.log(batches[0]);
+      logger(batches[0]);
 
       if (batches[0].provider.providerOptions.disableProvider)
         return await Promise.all(
@@ -414,29 +424,34 @@ export default class RequestHandler {
             );
           })
         );
-      else
-        return await this.LLMProvider.generateBatch(
-          batches.map((batch) => {
-            return {
-              messages: batch.bodyParams.messages,
-              reqParams: {
-                ...batch.allParams,
-                ...batch.bodyParams,
-                requestParams: {
-                  // body: JSON.stringify(bodyParams),
-                  ...batch.reqParams,
-                  signal: this.signalController?.signal,
-                },
-                otherOptions:
-                  this.plugin.settings.LLMProviderOptions[this.LLMProvider.id],
-                stream: false,
-                llmPredict: batch.bodyParams.messages?.length === 1,
+      else if (!this.LLMProvider) {
+        throw new Error("No LLM provider selected");
+      }
+      return await this.LLMProvider.generateBatch(
+        batches.map((batch) => {
+          if (!this.LLMProvider) {
+            throw new Error("No LLM provider selected");
+          }
+          return {
+            messages: batch.bodyParams.messages,
+            reqParams: {
+              ...batch.allParams,
+              ...batch.bodyParams,
+              requestParams: {
+                // body: JSON.stringify(bodyParams),
+                ...batch.reqParams,
+                signal: this.signalController?.signal,
               },
-            };
-          }),
+              otherOptions:
+                this.plugin.settings.LLMProviderOptions[this.LLMProvider.id],
+              stream: false,
+              llmPredict: batch.bodyParams.messages?.length === 1,
+            },
+          };
+        }),
 
-          onOneFinishs
-        );
+        onOneFinishs
+      );
     } catch (err: any) {
       this.endLoading();
       this.plugin.handelError(err);
@@ -493,8 +508,12 @@ export default class RequestHandler {
           templatePath
         );
 
+      if (!this.LLMProvider?.provider) {
+        throw new Error("No LLM provider selected");
+      }
+
       await providerOptionsValidator(
-        this.LLMProvider.provider,
+        this.LLMProvider?.provider,
         provider.providerOptions
       );
 
@@ -509,7 +528,7 @@ export default class RequestHandler {
           signal: this.signalController?.signal,
         },
         otherOptions:
-          this.plugin.settings.LLMProviderOptions[this.LLMProvider.id],
+          this.plugin.settings.LLMProviderOptions[this.LLMProvider?.id],
         stream: false,
         llmPredict:
           bodyParams.messages?.length === 1 &&
@@ -520,7 +539,7 @@ export default class RequestHandler {
         provider.providerOptions.estimatingMode ||
         provider.providerOptions.disableProvider
           ? ""
-          : await this.LLMProvider.generate(
+          : await this.LLMProvider?.generate(
               bodyParams.messages,
               innerContext,
               undefined,

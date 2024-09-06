@@ -73,7 +73,7 @@ export default class ProviderBase implements LLMProviderInterface {
     customConfig?: any,
     onOneFinishs?: ((content: string, index: number) => void) | undefined
   ): Promise<string[]> {
-    const k = await processPromisesSetteledBatch(
+    const k = await processPromisesSettledBatch(
       batches.map(async (batch, i) => {
         const [err, res] = await safeAwait(
           this.generate(

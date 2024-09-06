@@ -370,7 +370,7 @@ export default class TextGeneratorPlugin extends Plugin {
       });
       const span1 = document.createElement("span");
 
-      span1.textContent = `${this.textGenerator.LLMProvider.getSettings()?.model ?? "No model selected"}`;
+      span1.textContent = `${this.textGenerator.LLMProvider?.getSettings()?.model ?? "No model selected"}`;
       this.modelBar.append(span1);
       if (processing) {
         const span = document.createElement("span");
@@ -665,14 +665,11 @@ export default class TextGeneratorPlugin extends Plugin {
   getApiKeys() {
     const keys: Record<string, string | undefined> = {};
     for (const k in this.settings.LLMProviderOptions) {
-      if (
-        Object.prototype.hasOwnProperty.call(
-          this.settings.LLMProviderOptions,
-          k
-        )
-      ) {
-        keys[this.textGenerator.LLMRegestry.UnProviderSlugs[k]] =
-          this.settings.LLMProviderOptions[k]?.api_key;
+      if (k && this.settings.LLMProviderOptions.hasOwnProperty(k)) {
+        if (this.textGenerator.LLMRegestry) {
+          keys[this.textGenerator.LLMRegestry.UnProviderSlugs[k]] =
+            this.settings.LLMProviderOptions[k]?.api_key;
+        }
       }
     }
     return keys;

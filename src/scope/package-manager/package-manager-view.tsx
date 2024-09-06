@@ -111,7 +111,7 @@ export const PackageManagerView = (p: { parent: PackageManagerUI }) => {
   }, []);
 
   const userApikey = useMemo(
-    () => glob.plugin.packageManager.getApikey(),
+    () => glob.plugin.packageManager.getApiKey(),
     [glob.trg]
   );
   const isLoggedIn = !!userApikey;

@@ -396,7 +396,7 @@ export default class Commands {
               if (!selectedLLMName) return;
 
               const llm =
-                self.plugin.textGenerator.LLMRegestry.get(selectedLLMName);
+                self.plugin.textGenerator.LLMRegestry?.get(selectedLLMName);
               if (llm) {
                 self.plugin.settings.selectedProvider = selectedLLMName as any;
               }

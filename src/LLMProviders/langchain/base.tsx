@@ -382,7 +382,8 @@ export default class LangchainProvider
     for (const message of messages) {
       numTokens += tokensPerMessage;
       for (const [key, value] of Object.entries(message)) {
-        numTokens += encoder.encode(value).length;
+        if (typeof value === "string")
+          numTokens += encoder.encode(value).length;
         if (key === "name") {
           numTokens += tokensPerName;
         }

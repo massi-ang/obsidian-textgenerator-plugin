@@ -1,4 +1,4 @@
-import { llmSlugType, llmType } from ".";
+import { LlmSlugType, LlmType } from ".";
 
 export default class LLMProviderRegistry<
   T extends { slug?: any; id: any; displayName?: string },
@@ -6,10 +6,10 @@ export default class LLMProviderRegistry<
   // private plugins: Map<string, T> = new Map();
   private plugins: Record<string, T> = {};
 
-  ProviderSlugs: Partial<Record<llmSlugType, llmType>> = {};
-  UnProviderSlugs: Record<string, llmSlugType> = {};
-  ProviderSlugsList: llmSlugType[] = [];
-  UnProviderNames: Record<string, llmSlugType> = {};
+  ProviderSlugs: Partial<Record<LlmSlugType, LlmType>> = {};
+  UnProviderSlugs: Record<string, LlmSlugType> = {};
+  ProviderSlugsList: LlmSlugType[] = [];
+  UnProviderNames: Record<string, LlmSlugType> = {};
   constructor(plugins: Record<string, T> = {}) {
     // for (const provider in plugins) {
     //     if (Object.prototype.hasOwnProperty.call(plugins, provider)) {
@@ -39,7 +39,7 @@ export default class LLMProviderRegistry<
           this.UnProviderSlugs[pvrd.id] = pvrd.slug;
           this.ProviderSlugsList.push(pvrd.slug);
         }
-        this.UnProviderNames[pvrd.id] = pvrd.displayName;
+        this.UnProviderNames[pvrd.id] = pvrd.displayName as LlmSlugType;
       }
     }
   }

@@ -54,9 +54,9 @@ export const defaultProviders = [
   CustomProvider,
 ];
 
-export type llmType = (typeof defaultProviders)[number]["id"];
-export type llmSlugType = (typeof defaultProviders)[number]["slug"];
-export type LLMProviderType = llmType;
+export type LlmType = (typeof defaultProviders)[number]["id"];
+export type LlmSlugType = (typeof defaultProviders)[number]["slug"];
+export type LLMProviderType = LlmType;
 
 export const defaultProvidersMap: Record<
   any,

@@ -100,7 +100,7 @@ ${context.query}`;
         await this.plugin.textGenerator.loadllm(
           autoSuggestOptions.selectedProvider
         );
-      const re = await this.plugin.textGenerator.LLMProvider.generateMultiple(
+      const re = await this.plugin.textGenerator.LLMProvider?.generateMultiple(
         [this.plugin.textGenerator.LLMProvider.makeMessage(prompt, "user")],
         {
           stream: false,

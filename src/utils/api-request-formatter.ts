@@ -50,7 +50,7 @@ export default class ReqFormatter {
     logger("getRequestParameters start", _params, insertMetadata, templatePath);
 
     const frontmatter: any = this.getFrontmatter(templatePath, insertMetadata);
-    const providerId = this.plugin.textGenerator.LLMRegestry.get(
+    const providerId = this.plugin.textGenerator.LLMRegestry?.get(
       frontmatter?.config?.provider
     )?.id as string;
     logger("frontmatter", frontmatter);
