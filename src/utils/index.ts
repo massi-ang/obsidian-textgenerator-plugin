@@ -126,11 +126,11 @@ export function removeExtensionFromName(name: string) {
   return res;
 }
 
-export function numberToKFormat(number: number) {
-  if (number >= 1000) {
-    return (number / 1000).toFixed(1) + "k";
+export function numberToKFormat(n: number) {
+  if (n >= 1000) {
+    return (n / 1000).toFixed(1) + "k";
   } else {
-    return number.toString();
+    return n.toString();
   }
 }
 
@@ -164,7 +164,7 @@ export async function getContextAsString(
   let contextString = "";
 
   for (const key in context) {
-    if (!context[key] || key == "content") continue;
+    if (!context[key] || key === "content") continue;
 
     contextString += `${key}:`;
 
@@ -202,7 +202,7 @@ export function mapMessagesToLangchainMessages(
 ): BaseMessage[] {
   return messages.map((msg) => {
     const msgF =
-      typeof msg.content == "string"
+      typeof msg.content === "string"
         ? msg.content
         : {
             name: msg.role,
@@ -233,7 +233,7 @@ export function cleanConfig<T>(options: T): T {
       const value = options[key];
 
       // Check if the value is not an empty string
-      if (value != undefined && (typeof value !== "string" || value !== "")) {
+      if (value !== undefined && (typeof value !== "string" || value !== "")) {
         cleanedOptions[key] = value; // Copy non-empty properties to the cleaned object
       }
     }
@@ -242,10 +242,8 @@ export function cleanConfig<T>(options: T): T {
   return cleanedOptions;
 }
 
-export async function processPromisesSetteledBatch<
-  T extends () => Promise<any>,
->(
-  items: Array<AsyncReturnType<T>>,
+export async function processPromisesSettledBatch<T extends () => Promise<any>>(
+  items: AsyncReturnType<T>[],
   limit: number,
   waitingBetween = 10
 ): Promise<PromiseSettledResult<any>[]> {
@@ -266,7 +264,7 @@ export async function processPromisesSetteledBatch<
 
 export function promiseForceFullfil(item: any) {
   // return the failed reson
-  return item.status == "fulfilled" ? item.value : `FAILED: ${item?.reason}`;
+  return item.status === "fulfilled" ? item.value : `FAILED: ${item?.reason}`;
 }
 
 import { SystemMessagePromptTemplate } from "@langchain/core/prompts";
@@ -348,7 +346,7 @@ export function replaceScriptBlocksWithMustachBlocks(templateString: string) {
 }
 
 export function nFormatter(n?: number, digits = 1) {
-  const num = n || 0;
+  const num = n ?? 0;
   const lookup = [
     { value: 1, symbol: "" },
     { value: 1e3, symbol: "k" },
@@ -358,12 +356,12 @@ export function nFormatter(n?: number, digits = 1) {
     { value: 1e15, symbol: "P" },
     { value: 1e18, symbol: "E" },
   ];
-  const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+  const rx = /\.0+$|(\.\d*[1-9])0+$/;
   const item = lookup
     .slice()
     .reverse()
-    .find(function (item) {
-      return num >= item.value;
+    .find((_item) => {
+      return num >= _item.value;
     });
   return item
     ? (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol
@@ -453,7 +451,7 @@ export function debounce<T extends unknown[], R>(
         func
           .apply(context, args)
           .then((result: any) => resolve(result))
-          .catch((error: any) => reject(error));
+          .catch((error: any) => reject(new Error(error)));
       }, wait);
     });
   };

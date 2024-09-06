@@ -36,13 +36,13 @@ export class SpinnersPlugin implements PluginValue {
   add(position: number, update: EditorView) {
     logger("add", position, update);
     this.listOfPositions.push(position);
-    //@ts-ignore
+    // @ts-ignore
     this.decorations = this.buildDecorations(update.viewState);
   }
 
   updatePos(position: number, update: EditorView) {
     this.listOfPositions[0] = position;
-    //@ts-ignore
+    // @ts-ignore
     this.decorations = this.buildDecorations(update.viewState);
   }
 
@@ -53,7 +53,7 @@ export class SpinnersPlugin implements PluginValue {
 	const index = this.listOfPositions.indexOf(position);
 	this.listOfPositions.splice(index, 1);
 	*/
-    //@ts-ignore
+    // @ts-ignore
     this.decorations = this.buildDecorations(update.viewState);
   }
 
@@ -69,7 +69,9 @@ export class SpinnersPlugin implements PluginValue {
     return this.listOfPositions;
   }
 
-  destroy() {}
+  destroy() {
+    // no-op
+  }
 
   buildDecorations(view: EditorView): DecorationSet {
     logger("  buildDecorations", view);

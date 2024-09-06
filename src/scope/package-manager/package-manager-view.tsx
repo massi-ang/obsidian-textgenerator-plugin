@@ -278,14 +278,14 @@ export const PackageManagerView = (p: { parent: PackageManagerUI }) => {
                         <div className="plug-tg-flex plug-tg-w-full plug-tg-flex-wrap plug-tg-justify-items-center plug-tg-gap-2">
                           {premiumFeatures.map((item) => {
                             const i = items.findIndex(
-                              (it) => it.packageId == item.packageId
+                              (it) => it.packageId === item.packageId
                             );
                             return (
                               <TemplateItem
                                 key={item.packageId + "premium"}
                                 item={item}
                                 index={i}
-                                selected={selectedIndex == i}
+                                selected={selectedIndex === i}
                                 select={select}
                                 owned={glob.plugin.packageManager.simpleCheckOwnership(
                                   item.packageId
@@ -310,14 +310,14 @@ export const PackageManagerView = (p: { parent: PackageManagerUI }) => {
                         <div className="community-modal-search-results plug-tg-justify-items-center plug-tg-pl-0">
                           {communityTemplates.map((item) => {
                             const i = items.findIndex(
-                              (it) => it.packageId == item.packageId
+                              (it) => it.packageId === item.packageId
                             );
                             return (
                               <TemplateItem
                                 key={item.packageId + "community"}
                                 item={item}
                                 index={i}
-                                selected={selectedIndex == i}
+                                selected={selectedIndex === i}
                                 select={select}
                                 update={pacakgeIdsToUpdateHash[item.packageId]}
                               />

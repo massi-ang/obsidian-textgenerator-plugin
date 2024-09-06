@@ -78,7 +78,7 @@ export default function ConsideredContextSetting(props: {
             value={"" + global.plugin.settings.context.customInstructEnabled}
             setValue={async (val) => {
               global.plugin.settings.context.customInstructEnabled =
-                val == "true";
+                val === "true";
               await global.plugin.saveSettings();
               global.triggerReload();
             }}
@@ -130,11 +130,11 @@ export default function ConsideredContextSetting(props: {
             setValue={async (val) => {
               if (!global.plugin.settings.advancedOptions)
                 global.plugin.settings.advancedOptions = {
-                  generateTitleInstructEnabled: val == "true",
+                  generateTitleInstructEnabled: val === "true",
                 };
 
               global.plugin.settings.advancedOptions.generateTitleInstructEnabled =
-                val == "true";
+                val === "true";
               await global.plugin.saveSettings();
               global.triggerReload();
             }}
@@ -262,7 +262,7 @@ export default function ConsideredContextSetting(props: {
                   setValue={async (val) => {
                     (global.plugin.settings.context[
                       key as keyof typeof global.plugin.settings.context
-                    ] as any) = val == "true";
+                    ] as any) = val === "true";
                     await global.plugin.saveSettings();
                     global.triggerReload();
                   }}
@@ -281,7 +281,7 @@ export default function ConsideredContextSetting(props: {
             type="checkbox"
             value={"" + global.plugin.settings.allowJavascriptRun}
             setValue={async (val) => {
-              global.plugin.settings.allowJavascriptRun = val == "true";
+              global.plugin.settings.allowJavascriptRun = val === "true";
               await global.plugin.saveSettings();
               global.triggerReload();
             }}

@@ -1,9 +1,9 @@
 import { registerCoreHelpers } from "./helpers";
 import type Handlebars from "handlebars";
 export default function asyncHelpers(handlebars: any): typeof Handlebars {
-  const _compile = handlebars.compile,
-    _template = handlebars.VM.template,
-    _mergeSource = handlebars.JavaScriptCompiler.prototype.mergeSource;
+  const _compile = handlebars.compile;
+  const _template = handlebars.VM.template;
+  const  _mergeSource = handlebars.JavaScriptCompiler.prototype.mergeSource;
 
   handlebars.JavaScriptCompiler.prototype.mergeSource = function (
     varDeclarations: any
@@ -37,7 +37,7 @@ export default function asyncHelpers(handlebars: any): typeof Handlebars {
     return source;
   };
 
-  handlebars.template = function (spec: any) {
+  handlebars.template = (spec: any) => {
     spec.main_d =
       (
         prog: any,
@@ -64,7 +64,7 @@ export default function asyncHelpers(handlebars: any): typeof Handlebars {
     return _template(spec, handlebars);
   };
 
-  handlebars.compile = function () {
+  handlebars.compile = () =>  {
     const compiled = _compile.apply(handlebars, [
       // @ts-ignore
       // eslint-disable-next-line prefer-rest-params
@@ -72,7 +72,7 @@ export default function asyncHelpers(handlebars: any): typeof Handlebars {
       { noEscape: true },
     ]);
 
-    return function (context: any, execOptions: any) {
+    return  (context: any, execOptions: any) => {
       context = context || {};
 
       return compiled.call(handlebars, context, execOptions);

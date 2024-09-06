@@ -19,8 +19,8 @@ export default class RequestHandler {
   reqFormatter: ReqFormatter;
   signalController?: AbortController;
 
-  LLMProvider: LLMProviderInterface = undefined as any;
-  LLMRegestry: LLMProviderRegistry<LLMProviderInterface> = undefined as any;
+  LLMProvider?: LLMProviderInterface = undefined;
+  LLMRegestry?: LLMProviderRegistry<LLMProviderInterface> = undefined;
 
   proxyService: ProxyService;
 
@@ -54,28 +54,30 @@ export default class RequestHandler {
     // default llm Providers;
     const llmProviders: Record<any, any> = { ...defaultProvidersMap };
 
-    // get Customones and merge them with the default ones
+    // get Custom ones and merge them with the default ones
     for (const llmId in this.plugin.settings.LLMProviderProfiles) {
-      const llm = this.plugin.settings.LLMProviderProfiles[llmId];
-      const parent = defaultProvidersMap[llm.extends as any];
+      if (!this.plugin.settings.LLMProviderProfiles.hasOwnProperty(llmId)) {
+        const llm = this.plugin.settings.LLMProviderProfiles[llmId];
+        const parent = defaultProvidersMap[llm.extends as any];
 
-      if (!parent) continue;
+        if (!parent) continue;
 
-      class clone extends parent {
-        static provider = parent.provider;
+        class Clone extends parent {
+          static provider = parent.provider;
 
-        static id = llmId;
-        static slug = llm.name;
+          static id = llmId;
+          static slug = llm.name;
 
-        cloned = true;
-        static cloned = true;
-        static displayName = llm.name;
+          cloned = true;
+          static cloned = true;
+          static displayName = llm.name;
 
-        id = clone.id;
-        provider = clone.provider;
+          id = Clone.id;
+          provider = Clone.provider;
+        }
+
+        llmProviders[llmId] = Clone;
       }
-
-      llmProviders[llmId] = clone;
     }
 
     this.LLMRegestry = new LLMProviderRegistry(llmProviders);
@@ -115,14 +117,16 @@ export default class RequestHandler {
     await this.loadLLMRegistry();
   }
 
-  async loadllm(name: string = this.plugin.settings.selectedProvider || "") {
+  async loadllm(name: string = this.plugin.settings.selectedProvider ?? "") {
     const llmList = this.LLMRegestry.getList();
 
     const llm = this.LLMRegestry.get(name) || this.LLMRegestry.get(llmList[0]);
 
     if (llm && llm.id !== this.LLMProvider?.id) {
-      if (Platform.isMobile && llm.mobileSupport == false)
-        throw `Mobile is not supported for the "${llm?.id}" LLM provider`;
+      if (Platform.isMobile && !llm.mobileSupport)
+        throw new Error(
+          `Mobile is not supported for the "${llm?.id}" LLM provider`
+        );
 
       // @ts-ignore
       const instance = new llm({
@@ -158,7 +162,7 @@ export default class RequestHandler {
           {
             ...this.LLMProvider.getSettings(),
             ...settings,
-            //@ts-ignore
+            // @ts-ignore
             prompt: promp,
           },
           false
@@ -187,7 +191,7 @@ export default class RequestHandler {
                   this.plugin.settings.LLMProviderOptions[this.LLMProvider.id],
                 stream: false,
                 llmPredict:
-                  bodyParams.messages?.length == 1 &&
+                  bodyParams.messages?.length === 1 &&
                   !this.plugin.settings.advancedOptions
                     ?.includeAttachmentsInRequest,
               },
@@ -235,13 +239,13 @@ export default class RequestHandler {
 
       if (this.plugin.processing && !additionnalParams.signal) {
         logger("streamGenerate error", "There is another generation process");
-        throw "There is another generation process";
+        throw new Error("There is another generation process");
       }
 
       const { options, template } = context;
 
       const prompt = (
-        typeof template != "undefined" && !context.context
+        typeof template !== "undefined" && !context.context
           ? template.inputTemplate(options)
           : context.context
       ) as string;
@@ -268,10 +272,10 @@ export default class RequestHandler {
 
       if (!this.LLMProvider?.streamable) {
         logger("streamGenerate error", "LLM not streamable");
-        throw "LLM not streamable";
+        throw new Error("LLM not streamable");
       }
 
-      //const stream = await this.streamRequest(reqParams);
+      // const stream = await this.streamRequest(reqParams);
       const stream = async (
         onToken: Parameters<typeof this.LLMProvider.generate>[2],
         onError?: (error: any) => void
@@ -288,7 +292,7 @@ export default class RequestHandler {
             otherOptions: this.LLMProvider.getSettings(),
             streaming: true,
             llmPredict:
-              bodyParams.messages?.length == 1 &&
+              bodyParams.messages?.length === 1 &&
               !this.plugin.settings.advancedOptions
                 ?.includeAttachmentsInRequest,
           } as any;
@@ -378,7 +382,7 @@ export default class RequestHandler {
               ...ctxt.options,
               ...params,
               prompt:
-                typeof ctxt.template != "undefined" && !ctxt.context
+                typeof ctxt.template !== "undefined" && !ctxt.context
                   ? await ctxt.template.inputTemplate(ctxt.options)
                   : ctxt.context,
             },
@@ -426,7 +430,7 @@ export default class RequestHandler {
                 otherOptions:
                   this.plugin.settings.LLMProviderOptions[this.LLMProvider.id],
                 stream: false,
-                llmPredict: batch.bodyParams.messages?.length == 1,
+                llmPredict: batch.bodyParams.messages?.length === 1,
               },
             };
           }),
@@ -473,7 +477,7 @@ export default class RequestHandler {
       }
 
       const prompt = (
-        typeof template != "undefined" && !context.context?.trim()
+        typeof template !== "undefined" && !context.context?.trim()
           ? await template.inputTemplate(options)
           : context.context
       ) as string;
@@ -508,7 +512,7 @@ export default class RequestHandler {
           this.plugin.settings.LLMProviderOptions[this.LLMProvider.id],
         stream: false,
         llmPredict:
-          bodyParams.messages?.length == 1 &&
+          bodyParams.messages?.length === 1 &&
           !this.plugin.settings.advancedOptions?.includeAttachmentsInRequest,
       };
 

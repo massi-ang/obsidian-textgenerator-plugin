@@ -63,7 +63,7 @@ export class ProxyService {
 
     this.server = app.listen();
 
-    if (!this.server) throw "couldn't create proxy server";
+    if (!this.server) throw new Error("couldn't create proxy server");
 
     return new Promise((s, r) => {
       // Access the dynamically assigned port

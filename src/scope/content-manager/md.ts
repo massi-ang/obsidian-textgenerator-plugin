@@ -55,7 +55,7 @@ export default class MarkdownManager implements ContentManager {
   }
 
   getCursor2(mode?: Mode) {
-    return this.editor.getCursor(mode == "replace" ? "from" : "to");
+    return this.editor.getCursor(mode === "replace" ? "from" : "to");
   }
 
   async getSelection(): Promise<string> {
@@ -113,8 +113,8 @@ export default class MarkdownManager implements ContentManager {
 
     if (
       line.trim().length <= 5 ||
-      line.trim() == "-" ||
-      line.trim() == "- [ ]"
+      line.trim() === "-" ||
+      line.trim() === "- [ ]"
     ) {
       fromTo.from = {
         ch: 0,
@@ -138,7 +138,7 @@ export default class MarkdownManager implements ContentManager {
       .split("\n")
       .findLastIndex((d) => reg.test(d));
 
-    if (lastLimiterIndex != -1) {
+    if (lastLimiterIndex !== -1) {
       fromTo.from = {
         ch: 0,
         line:
@@ -261,7 +261,7 @@ export default class MarkdownManager implements ContentManager {
         posting = await this.insertText(
           posting,
           cursor,
-          mode == "stream" ? "insert" : mode
+          mode === "stream" ? "insert" : mode
         );
       else posting = await this.insertText(posting, cursor, "stream");
 

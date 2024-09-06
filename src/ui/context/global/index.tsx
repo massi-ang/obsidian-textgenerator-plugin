@@ -19,7 +19,7 @@ export function GlobalProvider(props: {
   useEffect(() => {
     if (!loading) return;
     const t = setTimeout(() => {
-      if (loading == true) {
+      if (loading === true) {
         setLoading(false);
       }
     }, 60 * 1000);

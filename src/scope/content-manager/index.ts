@@ -16,25 +16,26 @@ export default class ContentManagerCls {
       case "markdown": {
         // @ts-ignore
         const editor = view?.editor || view.app.workspace.activeEditor?.editor;
-        if (!editor) throw "couldn't find the editor fsr";
+        if (!editor) throw new Error("couldn't find the editor fsr");
         return new MarkdownManager(editor, view, options);
       }
 
       case "excalidraw": {
         // @ts-ignore
         const ea = view.app.plugins?.plugins["obsidian-excalidraw-plugin"]?.ea;
-        if (!ea) throw "couldn't find the Escalidraw plugin fsr";
+        if (!ea) throw new Error("couldn't find the Escalidraw plugin fsr");
         ea.setView(view);
         ea.clear();
         return new ExcalidrawManager(ea, view);
       }
       case "canvas":
         // @ts-ignore
-        if (!view.canvas) throw "couldn't find the canvas plugin fsr";
+        if (!view.canvas)
+          throw new Error("couldn't find the canvas plugin fsr");
         // @ts-ignore
         return new CanvasManager(view.canvas, view);
       default:
-        throw `The content ${type} is not supported`;
+        throw new Error(`The content ${type} is not supported`);
     }
   }
 }

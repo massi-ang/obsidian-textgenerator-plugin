@@ -1,4 +1,4 @@
-import { defaultProviders, llmSlugType, llmType } from ".";
+import { llmSlugType, llmType } from ".";
 
 export default class LLMProviderRegistry<
   T extends { slug?: any; id: any; displayName?: string },
@@ -31,14 +31,16 @@ export default class LLMProviderRegistry<
     this.UnProviderNames = {};
 
     for (const id in this.plugins) {
-      const pvrd = this.plugins[id];
-      if (pvrd.slug) {
-        this.ProviderSlugs[pvrd.slug as keyof typeof this.ProviderSlugs] =
-          pvrd.id as any;
-        this.UnProviderSlugs[pvrd.id] = pvrd.slug;
-        this.ProviderSlugsList.push(pvrd.slug);
+      if (this.plugins.hasOwnProperty(id)) {
+        const pvrd = this.plugins[id];
+        if (pvrd.slug) {
+          this.ProviderSlugs[pvrd.slug as keyof typeof this.ProviderSlugs] =
+            pvrd.id;
+          this.UnProviderSlugs[pvrd.id] = pvrd.slug;
+          this.ProviderSlugsList.push(pvrd.slug);
+        }
+        this.UnProviderNames[pvrd.id] = pvrd.displayName;
       }
-      this.UnProviderNames[pvrd.id] = pvrd.displayName as any;
     }
   }
 

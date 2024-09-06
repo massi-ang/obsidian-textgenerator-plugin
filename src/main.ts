@@ -298,11 +298,11 @@ export default class TextGeneratorPlugin extends Plugin {
 
   async activateView(id: string, state?: any) {
     if (state?.openInPopout) {
-      const leaf = this.app.workspace.getRightLeaf(true);
+      const _leaf = this.app.workspace.getRightLeaf(true);
 
-      if (!leaf) return;
+      if (!_leaf) return;
 
-      await leaf.setViewState({
+      await _leaf.setViewState({
         type: id,
         active: true,
         state: { ...state, id: randomUUID() },
@@ -310,8 +310,8 @@ export default class TextGeneratorPlugin extends Plugin {
 
       await new Promise((s) => setTimeout(s, 500));
 
-      this.app.workspace.setActiveLeaf(leaf);
-      this.app.workspace.moveLeafToPopout(leaf);
+      this.app.workspace.setActiveLeaf(_leaf);
+      this.app.workspace.moveLeafToPopout(_leaf);
 
       return;
     }
@@ -416,7 +416,7 @@ export default class TextGeneratorPlugin extends Plugin {
           this,
           this.settings.max_tokens.toString(),
           async (result: string) => {
-            this.settings.max_tokens = parseInt(result);
+            this.settings.max_tokens = parseInt(result, 10);
             await this.saveSettings();
             new Notice(`Set Max Tokens to ${result}!`);
             this.updateStatusBar("");
@@ -492,7 +492,7 @@ export default class TextGeneratorPlugin extends Plugin {
   async handelError(error: any) {
     if (error?.length || error?.message) {
       new Notice(
-        "🔴 TG Error: " + (typeof error == "string" ? error : error.message)
+        "🔴 TG Error: " + (typeof error === "string" ? error : error.message)
       );
     } else {
       new Notice(
@@ -502,7 +502,7 @@ export default class TextGeneratorPlugin extends Plugin {
 
     console.error(error);
     try {
-      //this.updateStatusBar(`Error check console`);
+      // this.updateStatusBar(`Error check console`);
       if (this.settings.displayErrorInEditor) {
         const activeView = this.getActiveViewMD(false);
         if (activeView) {
@@ -546,7 +546,7 @@ export default class TextGeneratorPlugin extends Plugin {
     const button = document.createElement("div");
     button.classList.add("clickable-icon");
     button.setAttribute("aria-label", label);
-    //aria-label-position="right"
+    // aria-label-position="right"
     button.innerHTML = svg;
 
     return button;
@@ -588,9 +588,9 @@ export default class TextGeneratorPlugin extends Plugin {
 
     // get all secret keys
     Object.entries(this.settings?.LLMProviderOptions).forEach(([key1, l1]) => {
-      if (typeof l1 != "object") return;
+      if (typeof l1 !== "object") return;
       Object.entries(l1).forEach(([key2, l2]) => {
-        if (key2.toLowerCase().includes("key") && typeof l2 == "string") {
+        if (key2.toLowerCase().includes("key") && typeof l2 === "string") {
           keyList.push(`${key1}.${key2}`);
         }
       });
@@ -612,9 +612,9 @@ export default class TextGeneratorPlugin extends Plugin {
 
     // get all secret keys
     Object.entries(LLMProviderOptions).forEach(([key1, l1]) => {
-      if (typeof l1 != "object") return;
+      if (typeof l1 !== "object") return;
       Object.entries(l1).forEach(([key2, l2]) => {
-        if (key2.toLowerCase().includes("key") && typeof l2 == "string") {
+        if (key2.toLowerCase().includes("key") && typeof l2 === "string") {
           set(LLMProviderOptions, `${key1}.${key2}`, "");
         }
       });
@@ -634,7 +634,7 @@ export default class TextGeneratorPlugin extends Plugin {
         !safeStorage?.isEncryptionAvailable() ||
         !this.settings.encrypt_keys
       ) {
-        throw "disabled decryption";
+        throw new Error("disabled decryption");
       }
 
       const buff = Buffer.from(keyBuffer?.data || []);
@@ -714,11 +714,11 @@ export default class TextGeneratorPlugin extends Plugin {
   }
 
   async getActiveView() {
-    if (!this.app.workspace.activeLeaf) throw "activeLeaf not found";
+    if (!this.app.workspace.activeLeaf) throw new Error("activeLeaf not found");
     const activeView = this.app.workspace.activeLeaf.view;
 
     if (!activeView) {
-      throw "No active view.";
+      throw new Error("No active view.");
     }
     return activeView;
   }

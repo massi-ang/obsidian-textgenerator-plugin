@@ -51,7 +51,7 @@ export default class ExcalidrawManager implements ContentManager {
 
         return e;
       })
-      .find((e: Item) => e.id == id);
+      .find((e: Item) => e.id === id);
   }
 
   async getSelections(): Promise<string[]> {
@@ -100,7 +100,7 @@ export default class ExcalidrawManager implements ContentManager {
   async getCursor(dir?: "from" | "to" | undefined): Promise<Item> {
     // get first or last item
     const items = await this.getSelectedItems();
-    return items[dir == "from" ? 0 : items.length - 1];
+    return items[dir === "from" ? 0 : items.length - 1];
   }
 
   setCursor(pos: Item | Item[]): void {
@@ -138,14 +138,14 @@ export default class ExcalidrawManager implements ContentManager {
 
     let item = this.getElement(itemId) || selectedItem;
 
-    if (pos?.type == "text") {
+    if (pos?.type === "text") {
       if (pos.strokeColor) this.ea.style.strokeColor = pos.strokeColor;
       if (pos.fontSize) this.ea.style.fontSize = pos.fontSize;
       if (pos.fontFamily) this.ea.style.fontFamily = pos.fontFamily;
     }
 
     if (!item) {
-      const textSize: { width: number; height: number } =
+      const _textSize: { width: number; height: number } =
         this.ea.measureText(text);
 
       itemId = this.ea.addText(pos.x, pos.y, text, {
@@ -155,7 +155,7 @@ export default class ExcalidrawManager implements ContentManager {
         box: pos?.type
           ? {
               width: Math.min(
-                textSize.width + 2,
+                _textSize.width + 2,
                 Math.max(this.ea.style.fontSize * 20, 200)
               ),
               boxPadding: 0,
@@ -174,7 +174,7 @@ export default class ExcalidrawManager implements ContentManager {
       // this.ea.clear();
     }
 
-    if (item?.type == "text") {
+    if (item?.type === "text") {
       if (item.strokeColor) this.ea.style.strokeColor = item.strokeColor;
       if (item.fontSize) this.ea.style.fontSize = item.fontSize;
       if (item.fontFamily) this.ea.style.fontFamily = item.fontFamily;

@@ -47,7 +47,7 @@ export const getHBValues = (text: string) => {
       tag.startsWith("'") ||
       tag.startsWith('"') ||
       // if its a number
-      "" + +tag == tag ||
+      "" + +tag === tag ||
       // if its a helper
       defaultHelpers.includes(tag) ||
       // if its a ignored variable name
@@ -67,7 +67,7 @@ export const getHBValues = (text: string) => {
       continue;
     }
 
-    if (tag == "else") {
+    if (tag === "else") {
       continue;
     }
 
@@ -136,9 +136,7 @@ function extractVariablesAndStrings(input: string): string[] {
   let withinQuotes = false;
   let currentQuote = "";
 
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i];
-
+  for (const char of input) {
     if (char === '"' || char === "'") {
       if (withinQuotes && char === currentQuote) {
         currentToken += char;

@@ -41,7 +41,8 @@ export default function AutoSuggestSetting(props: { register: Register }) {
           type="checkbox"
           value={"" + global.plugin.settings.autoSuggestOptions.isEnabled}
           setValue={async (val) => {
-            global.plugin.settings.autoSuggestOptions.isEnabled = val == "true";
+            global.plugin.settings.autoSuggestOptions.isEnabled =
+              val === "true";
             global.plugin.autoSuggest?.renderStatusBar();
             setReloader(true);
             await global.plugin.saveSettings();
@@ -65,7 +66,7 @@ export default function AutoSuggestSetting(props: { register: Register }) {
               }
               setValue={async (val) => {
                 global.plugin.settings.autoSuggestOptions.inlineSuggestions =
-                  val == "true";
+                  val === "true";
                 setReloader(true);
                 await global.plugin.saveSettings();
                 global.triggerReload();
@@ -87,7 +88,7 @@ export default function AutoSuggestSetting(props: { register: Register }) {
                 }
                 setValue={async (val) => {
                   global.plugin.settings.autoSuggestOptions.showInMarkdown =
-                    val == "true";
+                    val === "true";
                   setReloader(true);
                   await global.plugin.saveSettings();
                   global.triggerReload();
@@ -203,7 +204,7 @@ export default function AutoSuggestSetting(props: { register: Register }) {
               }
               setValue={async (val) => {
                 global.plugin.settings.autoSuggestOptions.allowInNewLine =
-                  val == "true";
+                  val === "true";
                 global.plugin.autoSuggest?.renderStatusBar();
                 await global.plugin.saveSettings();
                 global.triggerReload();
@@ -221,7 +222,7 @@ export default function AutoSuggestSetting(props: { register: Register }) {
               value={"" + global.plugin.settings.autoSuggestOptions.showStatus}
               setValue={async (val) => {
                 global.plugin.settings.autoSuggestOptions.showStatus =
-                  val == "true";
+                  val === "true";
                 global.plugin.autoSuggest?.renderStatusBar();
                 await global.plugin.saveSettings();
                 global.triggerReload();
@@ -243,7 +244,7 @@ export default function AutoSuggestSetting(props: { register: Register }) {
               }
               setValue={async (val) => {
                 global.plugin.settings.autoSuggestOptions.customInstructEnabled =
-                  val == "true";
+                  val === "true";
                 await global.plugin.saveSettings();
                 global.triggerReload();
               }}
@@ -302,7 +303,7 @@ export default function AutoSuggestSetting(props: { register: Register }) {
               }
               setValue={async (val) => {
                 global.plugin.settings.autoSuggestOptions.customProvider =
-                  val == "true";
+                  val === "true";
                 global.plugin.autoSuggest?.renderStatusBar();
                 await global.plugin.saveSettings();
                 global.triggerReload();

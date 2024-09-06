@@ -4,7 +4,7 @@ import { Message } from "src/types";
 import TextGeneratorPlugin from "src/main";
 import type { ContextTemplate } from "./refs";
 import LLMProviderInterface, { LLMConfig } from "./interface";
-import { processPromisesSetteledBatch, promiseForceFullfil } from "#/utils";
+import { processPromisesSettledBatch, promiseForceFullfil } from "#/utils";
 import { AI_MODELS } from "#/constants";
 
 export default class ProviderBase implements LLMProviderInterface {

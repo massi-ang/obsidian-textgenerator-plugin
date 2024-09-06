@@ -139,7 +139,7 @@ export default function TemplateDetails(inProps: {
     setInstalling(true);
     try {
       try {
-        if (props.package?.type == "feature") await disable();
+        if (props.package?.type === "feature") await disable();
       } catch (err: any) {
         console.warn("couldn't disable the feature");
       }
@@ -359,7 +359,7 @@ export default function TemplateDetails(inProps: {
             ) : props.installed ? (
               <>
                 {/* feature controls */}
-                {props.package?.type == "feature" &&
+                {props.package?.type === "feature" &&
                   (!enabledFeature ? (
                     <button
                       className="plug-tg-cursor-pointer plug-tg-bg-red-300"

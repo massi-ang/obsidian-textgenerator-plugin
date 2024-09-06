@@ -181,7 +181,7 @@ export default class CanvasManager implements ContentManager {
   async getCursor(dir?: "from" | "to" | undefined): Promise<Item> {
     // get first or last item
     const items = await this.getTextSelectedItems();
-    return items[dir == "from" ? 0 : items.length - 1];
+    return items[dir === "from" ? 0 : items.length - 1];
   }
 
   setCursor(pos: Item): void {
@@ -193,17 +193,17 @@ export default class CanvasManager implements ContentManager {
     const items = await this.getTextSelectedItems();
     let selectedItem = parent || (await this.getCursor());
     let width = 0;
-    //@ts-ignore
+    // @ts-ignore
     if (!text.replaceAll("\n", "").trim().length) return parent;
 
     await this.canvas.requestFrame();
 
     switch (mode) {
       case "replace":
-        if (!selectedItem) throw "no item to replace";
+        if (!selectedItem) throw new Error("no item to replace");
         // remove selected items(text)
         for (const item of [
-          ...items.filter((i) => i?.id != selectedItem?.id),
+          ...items.filter((i) => i?.id !== selectedItem?.id),
         ]) {
           if (item) this.canvas.removeNode(item);
         }
@@ -241,7 +241,7 @@ export default class CanvasManager implements ContentManager {
         break;
 
       case "stream":
-        if (!selectedItem?.id) throw "no item to update";
+        if (!selectedItem?.id) throw new Error("no item to update");
         await this.canvas.requestFrame();
         await selectedItem.setText(selectedItem.getData().text + text);
 
@@ -319,7 +319,9 @@ export default class CanvasManager implements ContentManager {
     return this.view.file;
   }
 
-  getRange(from?: any, to?: any) {}
+  getRange(from?: any, to?: any) {
+    return;
+  }
 
   getCurrentLine(): string {
     return "";

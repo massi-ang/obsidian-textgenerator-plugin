@@ -122,7 +122,7 @@ export class ListSuggest extends EditorSuggest<Completion> {
 
     if (
       (!this.plugin.settings.autoSuggestOptions.allowInNewLine &&
-        line == triggerPhrase) ||
+        line === triggerPhrase) ||
       !line.endsWith(triggerPhrase)
     ) {
       this.process = false;
@@ -183,7 +183,7 @@ export class ListSuggest extends EditorSuggest<Completion> {
   }
 
   public renderSuggestion(value: Completion, el: HTMLElement): void {
-    //logger("renderSuggestion",value,el);
+    // logger("renderSuggestion",value,el);
     el.setAttribute("dir", "auto");
     el.addClass("cursor-pointer");
     el.setText(value.label);
@@ -291,5 +291,7 @@ export class ListSuggest extends EditorSuggest<Completion> {
     return suggest;
   }
 
-  public destory() {}
+  public destroy() {
+    // nothing
+  }
 }

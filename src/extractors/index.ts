@@ -7,7 +7,7 @@ export default async function read(
   plugin: TextGeneratorPlugin,
   otherOptions?: any
 ) {
-  if (!app.vault.adapter.exists(path)) throw "file doesn't exist";
+  if (!app.vault.adapter.exists(path)) throw new Error("file doesn't exist");
 
   const extension = path.split(".").reverse()[0].toLowerCase();
 

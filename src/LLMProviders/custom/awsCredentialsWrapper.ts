@@ -14,17 +14,17 @@ export class AwsCredentialsWrapper {
   ): Promise<AwsCredentialIdentity> {
     const profile = await this.getAWSProfile(profileName);
 
-    if (profile == null)
+    if (profile === null)
       throw new Error(
         `Profile [${profileName}] not found in the AWS Config/Credential files.`
       );
 
-    //Get the provider for the profile
+    // Get the provider for the profile
     const provider = fromIni({
       profile: profileName,
     });
 
-    //Get the identity object proper
+    // Get the identity object proper
     const identity = await provider();
 
     return identity;
@@ -54,7 +54,7 @@ export class AwsCredentialsWrapper {
       throw new Error(`Unable to load the AWS Config/Credentials files. ${e}`);
     }
 
-    //First from credentials file
+    // First from credentials file
     let profile = sharedFiles.credentialsFile?.[profileName];
     if (profile && profile !== undefined) {
       return profile;

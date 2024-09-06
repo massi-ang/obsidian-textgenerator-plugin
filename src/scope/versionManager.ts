@@ -51,7 +51,7 @@ export default class VersionManager {
   async updateFromV0_3To0_4() {
     this.plugin.settings.version = "0.4.0";
     if (this.plugin.settings.endpoint) {
-      if (this.plugin.settings.endpoint == "https://api.openai.com") {
+      if (this.plugin.settings.endpoint === "https://api.openai.com") {
         this.plugin.settings.endpoint = this.plugin.defaultSettings.endpoint;
 
         // @ts-ignore
@@ -142,15 +142,15 @@ export default class VersionManager {
             const err = data?.${customConfig.path_to_error_message} || JSON.stringify(data);
             throw err;
           }
-        
+
           // get choices
           const choices =  data.${customConfig.path_to_choices}.map(c=>({
-            role:"assistant", 
+            role:"assistant",
             content: c.${customConfig.path_to_message_content}
           }));
-        
-          // the return object should be in the format of 
-          // { content: string }[] 
+
+          // the return object should be in the format of
+          // { content: string }[]
           // if there's only one response, put it in the array of choices.
           return choices;
         }`;

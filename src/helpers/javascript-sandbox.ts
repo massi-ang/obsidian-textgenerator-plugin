@@ -49,7 +49,7 @@ export default async function runJSInSandbox(
       if (mainNotice) mainNotice.hide();
       return (mainNotice = new Notice(
         context,
-        typeof duration == "object" ? undefined : +duration
+        typeof duration === "object" ? undefined : +duration
       ));
     },
     async deleteFile(path: string) {

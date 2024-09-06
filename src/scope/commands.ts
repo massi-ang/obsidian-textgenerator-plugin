@@ -59,7 +59,7 @@ export default class Commands {
       id: "insert-generated-text-From-template",
       name: "Templates: Generate & Insert",
       icon: "circle",
-      //hotkeys: [{ modifiers: ["Mod"], key: "q"}],
+      // hotkeys: [{ modifiers: ["Mod"], key: "q"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -67,14 +67,14 @@ export default class Commands {
             self.plugin.app,
             self.plugin,
             async (result) => {
-              if (!result.path) throw "Nothing was selected";
+              if (!result.path) throw new Error("Nothing was selected");
 
-              const self: Commands = this as any;
+              const _self: Commands = this as any;
               try {
-                const activeView = await self.plugin.getActiveView();
-                const CM = ContentManagerCls.compile(activeView, self.plugin);
+                const activeView = await _self.plugin.getActiveView();
+                const CM = ContentManagerCls.compile(activeView, _self.plugin);
 
-                await self.plugin.textGenerator.generateFromTemplate({
+                await _self.plugin.textGenerator.generateFromTemplate({
                   params: {},
                   templatePath: result.path,
                   filePath: (await CM.getActiveFile())?.path,
@@ -83,7 +83,7 @@ export default class Commands {
                   activeFile: true,
                 });
               } catch (error) {
-                self.plugin.handelError(error);
+                _self.plugin.handelError(error);
               }
             },
             "Generate and Insert Template In The Active Note"
@@ -98,7 +98,7 @@ export default class Commands {
       id: "generated-text-to-clipboard-From-template",
       name: "Templates: Generate & Copy To Clipboard ",
       icon: "circle",
-      //hotkeys: [{ modifiers: ["Mod"], key: "q"}],
+      // hotkeys: [{ modifiers: ["Mod"], key: "q"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -132,7 +132,7 @@ export default class Commands {
       id: "create-generated-text-From-template",
       name: "Templates: Generate & Create Note",
       icon: "plus-circle",
-      //hotkeys: [{ modifiers: ["Mod","Shift"], key: "q"}],
+      // hotkeys: [{ modifiers: ["Mod","Shift"], key: "q"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -140,7 +140,7 @@ export default class Commands {
             self.plugin.app,
             self.plugin,
             async (result) => {
-              if (!result.path) throw "Nothing was selected";
+              if (!result.path) throw new Error("Nothing was selected");
 
               try {
                 const activeView = await self.plugin.getActiveView();
@@ -170,7 +170,7 @@ export default class Commands {
       id: "search-results-batch-generate-from-template",
       name: "Templates (Batch): From Search Results",
       icon: "plus-circle",
-      //hotkeys: [{ modifiers: ["Mod","Shift"], key: "q"}],
+      // hotkeys: [{ modifiers: ["Mod","Shift"], key: "q"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -178,7 +178,7 @@ export default class Commands {
             self.plugin.app,
             self.plugin,
             async (result) => {
-              if (!result.path) throw "Nothing was selected";
+              if (!result.path) throw new Error("Nothing was selected");
               const files =
                 await self.plugin.textGenerator.embeddingsScope.getSearchResults();
 
@@ -206,7 +206,7 @@ export default class Commands {
       id: "insert-text-From-template",
       name: "Templates: Insert Template",
       icon: "square",
-      //hotkeys: [{ modifiers: ['Alt'], key: "q"}],
+      // hotkeys: [{ modifiers: ['Alt'], key: "q"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -214,7 +214,7 @@ export default class Commands {
             self.plugin.app,
             self.plugin,
             async (result) => {
-              if (!result.path) throw "Nothing was selected";
+              if (!result.path) throw new Error("Nothing was selected");
 
               try {
                 const activeView = await self.plugin.getActiveView();
@@ -244,7 +244,7 @@ export default class Commands {
       id: "create-text-From-template",
       name: "Templates: Insert & Create Note",
       icon: "plus-square",
-      //hotkeys: [{ modifiers: ["Shift","Alt"], key: "q"}],
+      // hotkeys: [{ modifiers: ["Shift","Alt"], key: "q"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -252,7 +252,7 @@ export default class Commands {
             self.plugin.app,
             self.plugin,
             async (result) => {
-              if (!result.path) throw "Nothing was selected";
+              if (!result.path) throw new Error("Nothing was selected");
 
               try {
                 const activeView = await self.plugin.getActiveView();
@@ -283,7 +283,7 @@ export default class Commands {
       id: "show-modal-From-template",
       name: "Show modal From Template",
       icon: "layout",
-      //hotkeys: [{ modifiers: ["Alt"], key: "4"}],
+      // hotkeys: [{ modifiers: ["Alt"], key: "4"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -317,7 +317,7 @@ export default class Commands {
       id: "open-template-as-tool",
       name: "Open Template as Tool",
       icon: "layout",
-      //hotkeys: [{ modifiers: ["Alt"], key: "4"}],
+      // hotkeys: [{ modifiers: ["Alt"], key: "4"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -346,7 +346,7 @@ export default class Commands {
       id: "open-playground",
       name: "Open Template Playground",
       icon: "layout",
-      //hotkeys: [{ modifiers: ["Alt"], key: "4"}],
+      // hotkeys: [{ modifiers: ["Alt"], key: "4"}],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -363,7 +363,7 @@ export default class Commands {
       id: "set_max_tokens",
       name: "Set max_tokens",
       icon: "separator-horizontal",
-      //hotkeys: [{ modifiers: ["Alt"], key: "1" }],
+      // hotkeys: [{ modifiers: ["Alt"], key: "1" }],
       async callback() {
         const self: Commands = this as any;
         new SetMaxTokens(
@@ -371,7 +371,7 @@ export default class Commands {
           self.plugin,
           self.plugin.settings.max_tokens.toString(),
           async (result: string) => {
-            self.plugin.settings.max_tokens = parseInt(result);
+            self.plugin.settings.max_tokens = parseInt(result, 10);
             await self.plugin.saveSettings();
             new Notice(`Set Max Tokens to ${result}!`);
             self.plugin.updateStatusBar("");
@@ -384,7 +384,7 @@ export default class Commands {
       id: "set-llm",
       name: "Choose a LLM",
       icon: "list-start",
-      //hotkeys: [{ modifiers: ["Alt"], key: "2" }],
+      // hotkeys: [{ modifiers: ["Alt"], key: "2" }],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -416,7 +416,7 @@ export default class Commands {
       id: "set-model",
       name: "Choose a Model",
       icon: "list-start",
-      //hotkeys: [{ modifiers: ["Alt"], key: "2" }],
+      // hotkeys: [{ modifiers: ["Alt"], key: "2" }],
       async callback() {
         const self: Commands = this as any;
         try {
@@ -448,7 +448,7 @@ export default class Commands {
       id: "packageManager",
       name: "Template Packages Manager",
       icon: "boxes",
-      //hotkeys: [{ modifiers: ["Alt"], key: "3" }],
+      // hotkeys: [{ modifiers: ["Alt"], key: "3" }],
       async callback() {
         const self: Commands = this as any;
         new PackageManagerUI(
@@ -463,7 +463,7 @@ export default class Commands {
       id: "create-template",
       name: "Create a Template",
       icon: "plus",
-      //hotkeys: [{ modifiers: ["Alt"], key: "c"}],
+      // hotkeys: [{ modifiers: ["Alt"], key: "c"}],
       async callback() {
         const self: Commands = this as any;
 
@@ -482,7 +482,7 @@ export default class Commands {
       id: "get-title",
       name: "Generate a Title",
       icon: "heading",
-      //hotkeys: [{ modifiers: ["Alt"], key: "c"}],
+      // hotkeys: [{ modifiers: ["Alt"], key: "c"}],
       async callback() {
         const self: Commands = this as any;
 
@@ -560,7 +560,7 @@ export default class Commands {
       id: "auto-suggest",
       name: "Turn on or off the auto suggestion",
       icon: "heading",
-      //hotkeys: [{ modifiers: ["Alt"], key: "c"}],
+      // hotkeys: [{ modifiers: ["Alt"], key: "c"}],
       async editorCallback(editor: Editor) {
         const self: Commands = this as any;
         self.plugin.settings.autoSuggestOptions.isEnabled =
@@ -581,7 +581,7 @@ export default class Commands {
       id: "calculate-tokens",
       name: "Estimate tokens for the current document",
       icon: "heading",
-      //hotkeys: [{ modifiers: ["Alt"], key: "c"}],
+      // hotkeys: [{ modifiers: ["Alt"], key: "c"}],
       async callback() {
         const self: Commands = this as any;
 
@@ -610,7 +610,7 @@ export default class Commands {
       id: "calculate-tokens-for-template",
       name: "Estimate tokens for a Template",
       icon: "layout",
-      //hotkeys: [{ modifiers: ["Alt"], key: "4"}],
+      // hotkeys: [{ modifiers: ["Alt"], key: "4"}],
       async callback() {
         const self: Commands = this as any;
         try {

@@ -209,10 +209,10 @@ export class InlineSuggest {
           },
           {
             any: (view, evt) => {
-              if (evt.key == "Control") return false;
+              if (evt.key === "Control") return false;
               const d = !!self.currentSuggestions?.length;
 
-              if (d && evt.key == "ArrowRight") {
+              if (d && evt.key === "ArrowRight") {
                 self.onSelect(evt.ctrlKey);
                 return true;
               }
@@ -323,7 +323,7 @@ class InlineSuggestionsWidget extends WidgetType {
 
   eq(widget: WidgetType): boolean {
     return (
-      this.renderedSuggestion ==
+      this.renderedSuggestion ===
       this.autoSuggest.currentSuggestions[this.autoSuggest.viewedSuggestion]
     );
   }

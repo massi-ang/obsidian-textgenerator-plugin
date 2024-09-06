@@ -193,7 +193,7 @@ export default function ChatComp(props: {
           )}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
-            if (e.shiftKey && e.code == "Enter") return handleSubmit(e);
+            if (e.shiftKey && e.code === "Enter") return handleSubmit(e);
           }}
           value={input}
         /> */}

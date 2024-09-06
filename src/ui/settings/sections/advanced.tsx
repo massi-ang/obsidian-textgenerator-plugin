@@ -45,7 +45,7 @@ export default function AdvancedSetting(props: { register: Register }) {
               global.plugin.settings.stream)
           }
           setValue={async (val) => {
-            global.plugin.settings.stream = val == "true";
+            global.plugin.settings.stream = val === "true";
             await global.plugin.saveSettings();
             global.triggerReload();
           }}
@@ -61,7 +61,7 @@ export default function AdvancedSetting(props: { register: Register }) {
           type="checkbox"
           value={"" + global.plugin.settings.displayErrorInEditor}
           setValue={async (val) => {
-            global.plugin.settings.displayErrorInEditor = val == "true";
+            global.plugin.settings.displayErrorInEditor = val === "true";
             await global.plugin.saveSettings();
             global.triggerReload();
           }}
@@ -78,7 +78,7 @@ export default function AdvancedSetting(props: { register: Register }) {
           type="checkbox"
           value={"" + global.plugin.settings.showStatusBar}
           setValue={async (val) => {
-            global.plugin.settings.showStatusBar = val == "true";
+            global.plugin.settings.showStatusBar = val === "true";
             await global.plugin.saveSettings();
             global.triggerReload();
           }}
@@ -95,7 +95,7 @@ export default function AdvancedSetting(props: { register: Register }) {
           type="checkbox"
           value={"" + global.plugin.settings.outputToBlockQuote}
           setValue={async (val) => {
-            global.plugin.settings.outputToBlockQuote = val == "true";
+            global.plugin.settings.outputToBlockQuote = val === "true";
             await global.plugin.saveSettings();
             global.triggerReload();
           }}
@@ -112,7 +112,7 @@ export default function AdvancedSetting(props: { register: Register }) {
           type="checkbox"
           value={"" + global.plugin.settings.freeCursorOnStreaming}
           setValue={async (val) => {
-            global.plugin.settings.freeCursorOnStreaming = val == "true";
+            global.plugin.settings.freeCursorOnStreaming = val === "true";
             await global.plugin.saveSettings();
             global.triggerReload();
           }}
@@ -128,7 +128,7 @@ export default function AdvancedSetting(props: { register: Register }) {
           type="checkbox"
           value={"" + global.plugin.settings.experiment}
           setValue={async (val) => {
-            global.plugin.settings.experiment = val == "true";
+            global.plugin.settings.experiment = val === "true";
             await global.plugin.saveSettings();
             global.triggerReload();
           }}
@@ -152,7 +152,7 @@ export default function AdvancedSetting(props: { register: Register }) {
               global.plugin.settings.advancedOptions = {};
 
             global.plugin.settings.advancedOptions.includeAttachmentsInRequest =
-              val == "true";
+              val === "true";
             await global.plugin.saveSettings();
             global.triggerReload();
           }}

@@ -28,7 +28,7 @@ export default function AvailableVars(props: {
                   key={v}
                   className={clsx(
                     "plug-tg-text-xs",
-                    hovered == v ? "plug-tg-opacity-100" : "plug-tg-opacity-95"
+                    hovered === v ? "plug-tg-opacity-100" : "plug-tg-opacity-95"
                   )}
                   onMouseEnter={() => setHovered(v)}
                 >

@@ -58,7 +58,7 @@ export default class LangchainOpenAIChatProvider
             type="password"
             value={config.api_key || ""}
             setValue={async (value) => {
-              if (props.self.originalId == id)
+              if (props.self.originalId === id)
                 global.plugin.settings.api_key = value;
               config.api_key = value;
 

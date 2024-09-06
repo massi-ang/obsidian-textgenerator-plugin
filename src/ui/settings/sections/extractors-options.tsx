@@ -92,7 +92,7 @@ export default function ExtractorsOptionsSetting(props: {
                 setValue={async (val) => {
                   global.plugin.settings.extractorsOptions[
                     key as keyof typeof global.plugin.settings.extractorsOptions
-                  ] = val == "true";
+                  ] = val === "true";
                   await global.plugin.saveSettings();
                   global.triggerReload();
                 }}

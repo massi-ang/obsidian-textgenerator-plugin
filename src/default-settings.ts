@@ -25,15 +25,15 @@ const DEFAULT_SETTINGS: TextGeneratorSettings = {
     customInstructEnabled: true,
     includeClipboard: true,
     customInstruct: `Title: {{title}}
-  
+
 Starred Blocks: {{starredBlocks}}
-	  
+
 {{tg_selection}}`,
 
     contextTemplate: `Title: {{title}}
-	
+
 Starred Blocks: {{starredBlocks}}
-	  
+
 {{tg_selection}}`,
   },
   requestTimeout: 300000,

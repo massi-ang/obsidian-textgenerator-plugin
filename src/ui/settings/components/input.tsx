@@ -20,12 +20,12 @@ export default function Input(props: {
   return (
     <div
       className={clsx("plug-tg-flex plug-tg-items-center plug-tg-gap-2 ", {
-        "checkbox-container plug-tg-cursor-pointer": props.type == "checkbox",
-        "is-enabled": props.type == "checkbox" && props.value == "true",
+        "checkbox-container plug-tg-cursor-pointer": props.type === "checkbox",
+        "is-enabled": props.type === "checkbox" && props.value === "true",
         "plug-tg-tooltip": error,
       })}
       onClick={
-        props.type == "checkbox"
+        props.type === "checkbox"
           ? (e) => {
               props.setValue(props.value != "true" ? "true" : "false");
             }
@@ -35,7 +35,7 @@ export default function Input(props: {
     >
       <input
         type={
-          props.type == "password"
+          props.type === "password"
             ? showPass
               ? "search"
               : "password"
@@ -46,7 +46,7 @@ export default function Input(props: {
         className={clsx(
           "plug-tg-input plug-tg-bg-[var(--background-modifier-form-field)]",
           {
-            "plug-tg-toggle": props.type == "checkbox",
+            "plug-tg-toggle": props.type === "checkbox",
             "plug-tg-text-red-300 plug-tg-outline plug-tg-outline-red-400":
               error,
           },
@@ -54,7 +54,7 @@ export default function Input(props: {
         )}
         value={value}
         defaultChecked={
-          props.type == "checkbox" ? props.value == "true" : undefined
+          props.type === "checkbox" ? props.value === "true" : undefined
         }
         onChange={
           props.type != "checkbox"
@@ -63,7 +63,7 @@ export default function Input(props: {
                   setValue(e.target.value);
 
                   const v =
-                    props.type == "number"
+                    props.type === "number"
                       ? e.target.valueAsNumber || 0
                       : e.target.value;
 
@@ -77,7 +77,7 @@ export default function Input(props: {
             : undefined
         }
       />
-      {props.type == "password" && (
+      {props.type === "password" && (
         <button
           className="plug-tg-btn plug-tg-btn-xs"
           onClick={() => setShowPass((i) => !i)}

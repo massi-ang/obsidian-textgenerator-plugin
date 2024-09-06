@@ -57,9 +57,9 @@ export const default_values = {
 export type CustomConfig = Record<keyof typeof default_values, string>;
 
 const roleMap = function (role: Role): "human" | "ai" | "system" {
-  if (role == "user" || role == "human") return "human";
-  if (role == "assistant" || role == "admin") return "ai";
-  if (role == "system") return "system";
+  if (role === "user" || role === "human") return "human";
+  if (role === "assistant" || role === "admin") return "ai";
+  if (role === "system") return "system";
   throw new Error(`Unsupported role: ${role}`);
 };
 
@@ -83,15 +83,15 @@ export default class BedrockProvider
   convertMessage(m: Message): ChatMessage {
     logger(m.role);
     logger(m.content);
-    if (typeof m.content == "string") {
+    if (typeof m.content === "string") {
       return { role: roleMap(m.role), message: m.content };
     }
     const text: string[] = [];
     const images: string[] = [];
     const content = m.content.forEach((c) => {
-      if (c.type == "text") {
+      if (c.type === "text") {
         text.push(c.text);
-      } else if (c.type == "image_url") {
+      } else if (c.type === "image_url") {
         if (!c.image_url?.url || !(c.image_url.url.indexOf("base64") >= 0))
           return;
         images.push(c.image_url.url);
@@ -136,12 +136,12 @@ export default class BedrockProvider
       const model = reqParams?.model ?? config.model;
       logger("model", model);
       if (
-        model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V1 ||
-        model == ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V2_0 ||
-        model == ImageModels.STABILITY_STABLE_DIFFUSION_XL_V1 ||
-        model == ImageModels.STABILITY_STABLE_IMAGE_CORE_V1_0 ||
-        model == ImageModels.STABILITY_STABLE_IMAGE_ULTRA_V1_0 ||
-        model == ImageModels.STABILITY_SD3_LARGE_V1_0
+        model === ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V1 ||
+        model === ImageModels.AMAZON_TITAN_IMAGE_GENERATOR_V2_0 ||
+        model === ImageModels.STABILITY_STABLE_DIFFUSION_XL_V1 ||
+        model === ImageModels.STABILITY_STABLE_IMAGE_CORE_V1_0 ||
+        model === ImageModels.STABILITY_STABLE_IMAGE_ULTRA_V1_0 ||
+        model === ImageModels.STABILITY_SD3_LARGE_V1_0
       ) {
         logger("generate image", model);
         return await this.generateImage(

@@ -9,7 +9,7 @@ import { HuggingFaceInference } from "@langchain/community/llms/hf";
 import BaseProvider from "../base";
 import {
   mapMessagesToLangchainMessages,
-  processPromisesSetteledBatch,
+  processPromisesSettledBatch,
 } from "../../utils";
 import LLMProviderInterface, { LLMConfig } from "../interface";
 
@@ -249,16 +249,16 @@ export default class LangchainProvider
               }
             );
 
-          if (typeof r == "string") res.content = r;
+          if (typeof r === "string") res.content = r;
           else res = r;
 
-          if (typeof res.content == "string") result = res.content;
+          if (typeof res.content === "string") result = res.content;
           else
             result = res.content
               .map((c) =>
-                c.type == "image_url"
+                c.type === "image_url"
                   ? `![](${c.image_url})`
-                  : c.type == "text"
+                  : c.type === "text"
                     ? c.text
                     : ""
               )
@@ -295,7 +295,7 @@ export default class LangchainProvider
         const llm = await this.getLLM(params);
         let requestResults: any[] = [];
         if (this.legacyN) {
-          await processPromisesSetteledBatch(
+          await processPromisesSettledBatch(
             Array.from({ length: reqParams.n || 1 }).map(async () => {
               requestResults.push(
                 ...(
@@ -403,7 +403,7 @@ export default class LangchainProvider
 }
 
 function contentToString(content: Message["content"]) {
-  return typeof content == "string"
+  return typeof content === "string"
     ? content
     : Object.values(content).join(" ");
 }

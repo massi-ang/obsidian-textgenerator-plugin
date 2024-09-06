@@ -128,7 +128,7 @@ export class PluginManager {
   /**
    * Install a package from a local folder
    * @param location package local folder location
-   * @param options options, if options.force == true then package is always reinstalled without version checking
+   * @param options options, if options.force === true then package is always reinstalled without version checking
    */
   async installFromPath(
     location: string,

@@ -34,7 +34,7 @@ export default class TGBlock {
 
         const activeView = this.plugin.getActiveViewMD();
 
-        if (!activeView) throw "active view wasn't detected";
+        if (!activeView) throw new Error("active view wasn't detected");
 
         const CM = ContentManagerCls.compile(activeView, this.plugin);
 
@@ -79,7 +79,7 @@ export default class TGBlock {
     const button = this.plugin.createRunButton("Generate Text", generateSVG);
     button.addEventListener("click", async () => {
       const activeView = this.plugin.getActiveViewMD();
-      if (!activeView) throw "activeView wasn't detected";
+      if (!activeView) throw new Error("activeView wasn't detected");
       const CM = ContentManagerCls.compile(activeView, this.plugin);
       console.log(markdown);
       if (activeView)
@@ -90,8 +90,8 @@ export default class TGBlock {
         );
 
       logger(`addTGMenu Generate Text`, {
-        markdown: markdown,
-        source: source,
+        markdown,
+        source,
       });
     });
 
@@ -103,8 +103,8 @@ export default class TGBlock {
     buttonMakeTemplate.addEventListener("click", async () => {
       await this.plugin.textGenerator.createTemplate(source, "newTemplate");
       logger(`addTGMenu MakeTemplate`, {
-        markdown: markdown,
-        source: source,
+        markdown,
+        source,
       });
     });
 

@@ -50,7 +50,7 @@ export default class TextGenerator extends RequestHandler {
     mode: "insert" | "replace" | string = "insert"
   ) {
     logger("getCursor");
-    const cursor = await editor.getCursor(mode == "replace" ? "from" : "to");
+    const cursor = await editor.getCursor(mode === "replace" ? "from" : "to");
 
     // let selectedText = editor.getSelection();
     // if (selectedText.length === 0) {
@@ -222,11 +222,11 @@ export default class TextGenerator extends RequestHandler {
 
               // here you can do some addition magic
               // check if its starting by space, and space doens't exist in note (used to detirmin if we should add space at the begining).
-              if (txt.length && txt != " " && content != " ") {
+              if (txt.length && txt !== " " && content !== " ") {
                 content = " " + content;
               }
 
-              if (!alreadyDidnewLine && txt == ":" && cntnt != "\n") {
+              if (!alreadyDidnewLine && txt === ":" && cntnt !== "\n") {
                 content = "\n" + content;
               }
 
@@ -237,7 +237,7 @@ export default class TextGenerator extends RequestHandler {
               }
             }
 
-            //logger("generateStreamInEditor message", { content });
+            // logger("generateStreamInEditor message", { content });
 
             streamHandler.insert(content);
 
@@ -504,7 +504,7 @@ export default class TextGenerator extends RequestHandler {
           );
         }
 
-        if (errortext || results == undefined) {
+        if (errortext || results === undefined) {
           logger("templateToModal error", errortext);
           return Promise.reject(errortext);
         }
@@ -554,9 +554,9 @@ export default class TextGenerator extends RequestHandler {
       const metadata = this.plugin.contextManager.getMetaData(undefined, true);
 
       const matter: Record<string, any> = {};
-      Object.entries(metadata?.frontmatter || {}).forEach(([key, content]) => {
+      Object.entries(metadata?.frontmatter || {}).forEach(([key, _content]) => {
         if (IGNORE_IN_YAML[key]) {
-          matter[key] = content;
+          matter[key] = _content;
         }
       });
 
@@ -639,7 +639,7 @@ ${removeYAML(content)}
     );
 
     const [errortemplateContent, templateContent] = await safeAwait(
-      //@ts-ignore
+      // @ts-ignore
       this.plugin.app.vault.adapter.read(templateFile?.path)
     );
 
@@ -682,7 +682,7 @@ ${removeYAML(content)}
     };
     logger("variables", variables);
     const filteredVariables = variables.filter(
-      (v) => contextVariablesObj[v] == undefined
+      (v) => contextVariablesObj[v] === undefined
     );
     if (filteredVariables.length > 0)
       new TemplateInputModalUI(
@@ -738,49 +738,49 @@ ${removeYAML(content)}
     }> = {};
 
     if (metadata?.PromptInfo?.promptId) {
-      validedMetaData["id"] = metadata.PromptInfo.promptId;
+      validedMetaData.id = metadata.PromptInfo.promptId;
     }
 
     if (metadata?.PromptInfo?.name) {
-      validedMetaData["name"] = metadata.PromptInfo.name;
+      validedMetaData.name = metadata.PromptInfo.name;
     }
 
     if (metadata?.PromptInfo?.description) {
-      validedMetaData["description"] = metadata.PromptInfo.description;
+      validedMetaData.description = metadata.PromptInfo.description;
     }
 
     if (metadata?.PromptInfo?.required_values) {
-      validedMetaData["required_values"] =
-        typeof metadata.PromptInfo.required_values == "string"
+      validedMetaData.required_values =
+        typeof metadata.PromptInfo.required_values === "string"
           ? metadata.PromptInfo.required_values.split(",")
           : metadata.PromptInfo.required_values;
     }
 
     if (metadata?.PromptInfo?.author) {
-      validedMetaData["author"] = metadata.PromptInfo.author;
+      validedMetaData.author = metadata.PromptInfo.author;
     }
 
     if (metadata?.PromptInfo?.tags) {
-      validedMetaData["tags"] =
-        typeof metadata.PromptInfo.tags == "string"
+      validedMetaData.tags =
+        typeof metadata.PromptInfo.tags === "string"
           ? metadata.PromptInfo.tags.split(",")
           : metadata.PromptInfo.tags;
     }
 
     if (metadata?.PromptInfo?.version) {
-      validedMetaData["version"] = metadata.PromptInfo.version;
+      validedMetaData.version = metadata.PromptInfo.version;
     }
 
     if (metadata?.PromptInfo?.commands) {
-      validedMetaData["commands"] =
-        typeof metadata.PromptInfo.commands == "string"
+      validedMetaData.commands =
+        typeof metadata.PromptInfo.commands === "string"
           ? metadata.PromptInfo.commands.split(",")
           : metadata.PromptInfo.commands;
     }
 
     if (metadata?.PromptInfo?.viewTypes) {
-      validedMetaData["viewTypes"] =
-        typeof metadata.PromptInfo.viewTypes == "string"
+      validedMetaData.viewTypes =
+        typeof metadata.PromptInfo.viewTypes === "string"
           ? metadata.PromptInfo.viewTypes.split(",")
           : metadata.PromptInfo.viewTypes;
     }
@@ -863,7 +863,7 @@ ${removeYAML(content)}
         continue;
       // @ts-ignore
       nowStats[path] = app.vault.adapter.files[path].ctime;
-      if (nowStats[path] != this.lastTemplatePathStats[path]) return true;
+      if (nowStats[path] !== this.lastTemplatePathStats[path]) return true;
     }
 
     return false;

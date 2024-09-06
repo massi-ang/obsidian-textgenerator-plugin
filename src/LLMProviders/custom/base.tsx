@@ -212,7 +212,7 @@ export default class CustomProvider
       console.log(rs);
 
       return rs?.map((c: Message) =>
-        c.type == "image_url"
+        c.type === "image_url"
           ? {
               ...c,
               content: `![](${c.image_url})\n${c.content || ""}`,
@@ -306,7 +306,7 @@ export default class CustomProvider
         if (typeof res != "object") resultContent = res as string;
         else {
           const choices = res as any;
-          if (typeof choices == "string") resultContent = choices;
+          if (typeof choices === "string") resultContent = choices;
           else resultContent = choices.map((c: any) => c.content).join("\n");
         }
 

@@ -56,7 +56,7 @@ export default function OptionsSetting(props: { register: Register }) {
             value={"" + global.plugin.settings.encrypt_keys}
             setValue={async (val) => {
               try {
-                global.plugin.settings.encrypt_keys = val == "true";
+                global.plugin.settings.encrypt_keys = val === "true";
                 await global.plugin.encryptAllKeys();
                 await global.plugin.saveSettings();
                 global.triggerReload();
@@ -76,7 +76,7 @@ export default function OptionsSetting(props: { register: Register }) {
                 moreData?.description ||
                 global.plugin.commands?.commands.find(
                   (c) =>
-                    c.id == `obsidian-textgenerator-plugin:${key}` ||
+                    c.id === `obsidian-textgenerator-plugin:${key}` ||
                     c.id === key
                 )?.name ||
                 key
@@ -95,7 +95,7 @@ export default function OptionsSetting(props: { register: Register }) {
                 setValue={async (val) => {
                   global.plugin.settings.options[
                     key as keyof typeof global.plugin.settings.options
-                  ] = val == "true";
+                  ] = val === "true";
 
                   // new Notice(
                   //   `${key} is ${

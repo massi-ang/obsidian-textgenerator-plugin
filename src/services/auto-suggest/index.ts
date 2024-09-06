@@ -105,7 +105,8 @@ ${context.query}`;
         {
           stream: false,
           n: parseInt(
-            "" + this.plugin.settings.autoSuggestOptions.numberOfSuggestions
+            "" + this.plugin.settings.autoSuggestOptions.numberOfSuggestions,
+            10
           ),
           stop: [this.plugin.settings.autoSuggestOptions.stop],
         }
@@ -126,7 +127,7 @@ ${context.query}`;
         }
 
         const suggestionsObj = {
-          label: label,
+          label,
           value: label.toLowerCase().startsWith(context.query.toLowerCase())
             ? label.substring(context.query.length).trim()
             : label.trim(),
@@ -202,7 +203,7 @@ ${context.query}`;
 
     if (
       (!this.plugin.settings.autoSuggestOptions.allowInNewLine &&
-        line == triggerPhrase) ||
+        line === triggerPhrase) ||
       !line.endsWith(triggerPhrase)
     ) {
       this.process = false;

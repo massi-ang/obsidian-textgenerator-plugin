@@ -45,7 +45,7 @@ export async function ensureDir(fsPath: string) {
       recursive: true,
     });
   } catch {
-    //TODO: what happens?
+    // TODO: what happens?
   }
 }
 

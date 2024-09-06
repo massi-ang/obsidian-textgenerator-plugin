@@ -70,7 +70,7 @@ export default class PluginAPIService {
   async selectProvider(slug: string): Promise<void> {
     const slugs = this.plugin.textGenerator.LLMRegestry.ProviderSlugs;
     const id = slugs[slug as keyof typeof slugs] || slug;
-    if (!id) throw `provider ${slug} doesn't exist`;
+    if (!id) throw new Error(`provider ${slug} doesn't exist`);
 
     this.plugin.settings.selectedProvider = id as any;
 

@@ -1,4 +1,4 @@
-//source: https://github.com/Kakulukian/youtube-transcript
+// source: https://github.com/Kakulukian/youtube-transcript
 import { request } from "obsidian";
 
 const RE_YOUTUBE =
@@ -57,7 +57,7 @@ export class YoutubeTranscript {
         splittedHTML[1].split(',"videoDetails')[0].replace("\n", "")
       ) as any;
 
-      const captions = detail?.["playerCaptionsTracklistRenderer"];
+      const captions = detail.playerCaptionsTracklistRenderer;
 
       if (!captions) {
         throw new Error("Transcript is disabled on this video");

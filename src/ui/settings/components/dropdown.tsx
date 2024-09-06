@@ -17,7 +17,7 @@ export default function Dropdown<T extends string>(props: {
   const slugs = useMemo(() => {
     return props.values.map((v) => {
       const val = v;
-      return val == "Default" ? "Custom" : val;
+      return val === "Default" ? "Custom" : val;
     });
   }, [props.values]);
 

@@ -149,7 +149,7 @@ export default class DefaultCustomProvider
             value={showAdvanced ? "true" : "false"}
             placeholder="Is it Streamable"
             setValue={async (value) => {
-              setShowAdvanced(value == "true");
+              setShowAdvanced(value === "true");
             }}
           />
         </SettingItem>
@@ -250,7 +250,7 @@ export default class DefaultCustomProvider
 
             <div className="plug-tg-opacity-70">Variables</div>
             {vars.map((v: string) =>
-              v == "api_key" ? null : (
+              v === "api_key" ? null : (
                 <SettingItem
                   key={v}
                   name={v}
@@ -314,7 +314,7 @@ export default class DefaultCustomProvider
                 }
                 placeholder="Is it Streamable"
                 setValue={async (value) => {
-                  config.streamable = value == "true";
+                  config.streamable = value === "true";
                   global.triggerReload();
                   // TODO: it could use a debounce here
                   await global.plugin.saveSettings();
@@ -331,7 +331,7 @@ export default class DefaultCustomProvider
                 type="checkbox"
                 value={"" + config.CORSBypass}
                 setValue={async (val) => {
-                  config.CORSBypass = val == "true";
+                  config.CORSBypass = val === "true";
                   await global.plugin.saveSettings();
                   global.triggerReload();
                 }}

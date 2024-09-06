@@ -75,14 +75,14 @@ export default class ReqFormatter {
     ) {
       // load the provider
       logger("Setting the model", frontmatter.config?.model);
-      const provider = AI_MODELS[frontmatter.config?.model].llm[0];
+      const _provider = AI_MODELS[frontmatter.config?.model].llm[0];
       params.model = frontmatter.config?.model.toLowerCase();
 
-      await this.plugin.textGenerator.loadllm(provider);
+      await this.plugin.textGenerator.loadllm(_provider);
     }
 
     if (!this.plugin.textGenerator.LLMProvider)
-      throw "LLM Provider not intialized";
+      throw new Error("LLM Provider not intialized");
 
     if (
       params.includeAttachmentsInRequest ??
@@ -109,7 +109,7 @@ export default class ReqFormatter {
 
     if (
       !params.messages?.length &&
-      (typeof params.prompt == "object" ||
+      (typeof params.prompt === "object" ||
         params.prompt?.replaceAll?.("\n", "").trim().length)
     ) {
       bodyParams.messages.push(
@@ -173,10 +173,7 @@ export default class ReqFormatter {
         }
       }
 
-      if (
-        frontmatter.bodyParams &&
-        frontmatter.config?.append?.bodyParams == false
-      ) {
+      if (frontmatter.bodyParams && !frontmatter.config?.append?.bodyParams) {
         bodyParams = {
           prompt: params.prompt,
           ...frontmatter.bodyParams,
@@ -206,13 +203,10 @@ export default class ReqFormatter {
 
       reqParams.body = JSON.stringify(bodyParams);
 
-      if (
-        frontmatter["reqParams"] &&
-        frontmatter.config?.append?.reqParams == false
-      ) {
-        reqParams = frontmatter["reqParams"];
-      } else if (frontmatter["reqParams"]) {
-        reqParams = { ...reqParams, ...frontmatter["reqParams"] };
+      if (frontmatter.reqParams && !frontmatter.config?.append?.reqParams) {
+        reqParams = frontmatter.reqParams;
+      } else if (frontmatter.reqParams) {
+        reqParams = { ...reqParams, ...frontmatter.reqParams };
       }
     } else {
       this.plugin.handelError("No valid Metadata (YAML front matter) found!");

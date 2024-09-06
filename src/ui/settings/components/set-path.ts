@@ -55,7 +55,7 @@ export class SetPath extends Modal {
             this.onSubmit(this.result);
             this.close();
           } catch (error) {
-            new Notice("🔴Error: File already exists. Choose another path.");
+            new Notice("🔴 Error: File already exists. Choose another path.");
             console.error(error);
           }
         }

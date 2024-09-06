@@ -49,7 +49,7 @@ export default function funCache<T extends (...args: any[]) => void>(
 
     const re = func(...args);
 
-    //async
+    // async
     if (options.async || !util.types.isPromise(re))
       return new Promise(async (s, r) => {
         try {
