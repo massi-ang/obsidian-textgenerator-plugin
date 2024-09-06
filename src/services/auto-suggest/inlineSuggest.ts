@@ -253,7 +253,7 @@ export class InlineSuggest {
   getInlineSuggestionsExtension(
     autoSuggest: InlineSuggest,
     onSelect: (all?: boolean) => void,
-    onExit: Function
+    onExit: () => void
   ) {
     return Prec.lowest(
       // must be lowest else you get infinite loop with state changes by our plugin
@@ -303,15 +303,15 @@ export class InlineSuggest {
 }
 
 class InlineSuggestionsWidget extends WidgetType {
-  onSelect: Function;
-  onExit: Function;
+  onSelect: (v: boolean) => void;
+  onExit: () => void;
   autoSuggest: InlineSuggest;
   renderedSuggestion?: string;
-  exitHandler?: Function;
+  exitHandler?: () => void;
   constructor(
     autoSuggest: InlineSuggest,
-    onSelect: Function,
-    onExit: Function,
+    onSelect: (v: boolean) => void,
+    onExit: () => void,
     readonly view: EditorView
   ) {
     super();
@@ -350,7 +350,7 @@ class InlineSuggestionsWidget extends WidgetType {
 
     span.onselect = span.onclick = () => {
       span.style.display = "hidden";
-      this.onSelect();
+      this.onSelect(false);
       this.onExit();
     };
 

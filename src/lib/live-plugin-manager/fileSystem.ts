@@ -44,7 +44,9 @@ export async function ensureDir(fsPath: string) {
     await fs.mkdir(fsPath, {
       recursive: true,
     });
-  } catch {}
+  } catch {
+    //TODO: what happens?
+  }
 }
 
 export function readFile(fsPath: string, encoding: string): Promise<string> {

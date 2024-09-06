@@ -69,10 +69,10 @@ export default class PackageManager {
           "packageManager: couldn't parse the config file ",
           configPath
         );
-        await this.initConfigFlie();
+        await this.initConfigFile();
       }
     } else {
-      await this.initConfigFlie();
+      await this.initConfigFile();
     }
 
     if (!this.configuration.packagesHash) this.configuration.packagesHash = {};
@@ -120,7 +120,9 @@ export default class PackageManager {
           await self.plugin.packageManager.setApiKey(apikey);
         }
       );
-    } catch {}
+    } catch {
+      // TODO: what?
+    }
 
     try {
       this.plugin.registerAction<{ packageId?: string }>(
@@ -142,11 +144,13 @@ export default class PackageManager {
             );
         }
       );
-    } catch {}
+    } catch {
+      // TODO: What?
+    }
   }
 
-  async initConfigFlie() {
-    logger("initConfigFlie");
+  async initConfigFile() {
+    logger("initConfigFile");
     const initConfig: TextGeneratorConfiguration = {
       packagesHash: {},
       resources: {},
@@ -176,7 +180,7 @@ export default class PackageManager {
     const packagesIdsToUpdate: string[] = [];
     await Promise.all(
       Object.entries(this.configuration.installedPackagesHash).map(
-        async ([installedPackage, promptId], i: number) => {
+        async ([promptId, installedPackage], i: number) => {
           try {
             const pkg = this.getPackageById(installedPackage.packageId);
             if (
@@ -398,7 +402,9 @@ export default class PackageManager {
         if (await adapter.exists(to))
           if (promptId) await adapter.remove(to);
           else await adapter.rmdir(to, true);
-      } catch {}
+      } catch {
+        // TODO: What?
+      }
 
       if (!promptId) {
         const list = (await adapter.list(from)).files;
@@ -704,8 +710,8 @@ export default class PackageManager {
   async installFeatureExternal(p: PackageTemplate) {
     // create feature folder
     const dirPath = `.obsidian/plugins/${p.packageId}`;
-    if (!(await app.vault.adapter.exists(dirPath)))
-      await createFolder(dirPath, app);
+    if (!(await this.app.vault.adapter.exists(dirPath)))
+      await createFolder(dirPath, this.app);
 
     const files = this.getResourcesOfFolder(p.packageId);
 
@@ -726,7 +732,7 @@ export default class PackageManager {
           throw res.text;
         }
 
-        await app.vault.adapter.writeBinary(
+        await this.app.vault.adapter.writeBinary(
           `${dirPath}/${file.name}`,
           await res.arrayBuffer
         );

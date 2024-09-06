@@ -192,7 +192,7 @@ export default class CanvasManager implements ContentManager {
   async insertText(text: string, parent?: Item, mode?: Mode): Promise<Item> {
     const items = await this.getTextSelectedItems();
     let selectedItem = parent || (await this.getCursor());
-
+    let width = 0;
     //@ts-ignore
     if (!text.replaceAll("\n", "").trim().length) return parent;
 
@@ -226,7 +226,7 @@ export default class CanvasManager implements ContentManager {
           }
         );
 
-        const width = selectedItem.width;
+        width = selectedItem.width;
         if (parent)
           selectedItem.moveAndResize({
             height: calculateNoteHeight({
@@ -317,6 +317,12 @@ export default class CanvasManager implements ContentManager {
   getActiveFile(): TFile {
     // @ts-ignore
     return this.view.file;
+  }
+
+  getRange(from?: any, to?: any) {}
+
+  getCurrentLine(): string {
+    return "";
   }
 }
 

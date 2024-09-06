@@ -13,19 +13,21 @@ export default class ContentManagerCls {
     };
 
     switch (type) {
-      case "markdown":
+      case "markdown": {
         // @ts-ignore
         const editor = view?.editor || view.app.workspace.activeEditor?.editor;
         if (!editor) throw "couldn't find the editor fsr";
         return new MarkdownManager(editor, view, options);
+      }
 
-      case "excalidraw":
+      case "excalidraw": {
         // @ts-ignore
         const ea = view.app.plugins?.plugins["obsidian-excalidraw-plugin"]?.ea;
         if (!ea) throw "couldn't find the Escalidraw plugin fsr";
         ea.setView(view);
         ea.clear();
         return new ExcalidrawManager(ea, view);
+      }
       case "canvas":
         // @ts-ignore
         if (!view.canvas) throw "couldn't find the canvas plugin fsr";

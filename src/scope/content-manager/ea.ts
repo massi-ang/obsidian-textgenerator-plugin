@@ -331,4 +331,10 @@ export default class ExcalidrawManager implements ContentManager {
   getActiveFile(): TFile {
     return this.ea.targetView.file;
   }
+
+  getRange(from?: any, to?: any) {}
+
+  getCurrentLine(): string {
+    return "";
+  }
 }

@@ -1,7 +1,7 @@
 import debounce from "debounce";
 import util from "util";
 
-export default function funCache<T extends Function>(
+export default function funCache<T extends (...args: any[]) => void>(
   func: T,
   options: any = { lifeTime: 0, debounceTimer: 1000, async: false }
 ): T & { clearCache: () => void } {
@@ -57,7 +57,9 @@ export default function funCache<T extends Function>(
             firstTimeDone = true;
             try {
               await getData();
-            } catch {}
+            } catch {
+              // TODO: what happens?
+            }
           }
 
           const val = await re;

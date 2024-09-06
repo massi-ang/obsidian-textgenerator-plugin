@@ -76,9 +76,9 @@ export default function Helpersfn(self: ContextManager) {
         throw new Exception("Must pass iterator to #each");
       }
 
-      let fn = options.fn,
-        inverse = options.inverse,
-        i = 0,
+      const fn = options.fn,
+        inverse = options.inverse;
+      let i = 0,
         ret = "",
         data: any;
 

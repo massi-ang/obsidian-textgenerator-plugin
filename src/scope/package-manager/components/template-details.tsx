@@ -200,8 +200,6 @@ export default function TemplateDetails(inProps: {
       updateLocalView();
       updateView();
       checkForUpdates();
-    } catch (err: any) {
-      throw err;
     } finally {
       setInstalling(false);
     }
