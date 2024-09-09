@@ -32,11 +32,11 @@ export class AutoSuggest {
     | undefined;
   scope:
     | (Scope & {
-      keys: {
-        key: string;
-        func: any;
-      }[];
-    })
+        keys: {
+          key: string;
+          func: any;
+        }[];
+      })
     | undefined;
   isOpen = false;
   app: App;

@@ -11,7 +11,7 @@
     "build": "npm run build:css && node esbuild.config.mjs production",
     "version": "node version-bump.mjs",
     "version:go": "node ./scripts/version-bump.mjs --go",
-    "eslint": "eslint  --fix ./src/**/*.{js,jsx,ts,tsx,json}",
+    "eslint": "eslint  --fix ./src/**/*.{ts,tsx}",
     "build:css": "postcss ./src/css/global.css -o styles.css",
     "dev:css": "postcss ./src/css/global.css -o styles.css --watch",
     "prettier:check": "prettier --check \"**/*.{ts,tsx,js,md,mdx,css,yaml}\"",

@@ -31,8 +31,8 @@ export default function IconButton<
     props.variant === "danger"
       ? "plug-tg-bg-red-500 hover:plug-tg-bg-red-700 plug-tg-text-white"
       : disabled
-      ? "plug-tg-bg-gray-100 plug-tg-text-gray-300"
-      : "plug-tg-bg-gray-200 hover:plug-tg-bg-gray-500 plug-tg-text-gray-700";
+        ? "plug-tg-bg-gray-100 plug-tg-text-gray-300"
+        : "plug-tg-bg-gray-200 hover:plug-tg-bg-gray-500 plug-tg-text-gray-700";
 
   return (
     <button

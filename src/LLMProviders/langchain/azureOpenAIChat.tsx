@@ -1,9 +1,6 @@
 import React from "react";
 import LangchainBase from "./base";
-import type {
-  AzureOpenAIInput,
-  OpenAIChatInput,
-} from "@langchain/openai";
+import type { AzureOpenAIInput, OpenAIChatInput } from "@langchain/openai";
 import { BaseChatModelParams } from "@langchain/core/language_models/chat_models";
 
 import { IconExternalLink } from "@tabler/icons-react";

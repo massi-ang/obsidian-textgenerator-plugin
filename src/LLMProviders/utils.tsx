@@ -1,4 +1,11 @@
-import { IconList, IconPencil, IconReload, IconScreenshot, IconVideo, IconWaveSine } from "@tabler/icons-react";
+import {
+  IconList,
+  IconPencil,
+  IconReload,
+  IconScreenshot,
+  IconVideo,
+  IconWaveSine,
+} from "@tabler/icons-react";
 import clsx from "clsx";
 import React, { useState, useEffect, useId } from "react";
 import LLMProviderInterface from "./interface";
@@ -48,8 +55,9 @@ export function ModelsHandler(props: {
         body: "",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${config.api_key || global.plugin.settings.api_key
-            }`,
+          Authorization: `Bearer ${
+            config.api_key || global.plugin.settings.api_key
+          }`,
         },
       };
 
@@ -87,10 +95,14 @@ export function ModelsHandler(props: {
     );
   }, []);
 
-  const modelName = "" + config.model as string;
-  const model = AI_MODELS[modelName.toLowerCase()] || AI_MODELS["models" + modelName.toLowerCase()];
+  const modelName = ("" + config.model) as string;
+  const model =
+    AI_MODELS[modelName.toLowerCase()] ||
+    AI_MODELS["models" + modelName.toLowerCase()];
 
-  const supportedInputs = Object.keys(model?.inputOptions || {}).filter(e => !!e);
+  const supportedInputs = Object.keys(model?.inputOptions || {}).filter(
+    (e) => !!e
+  );
   return (
     <>
       <SettingItem
@@ -141,11 +153,13 @@ export function ModelsHandler(props: {
             </div>
           </div>
 
-          {!!supportedInputs.length && <div className="plug-tg-flex plug-tg-gap-2 plug-tg-items-center">
-            {model?.inputOptions?.images && <IconScreenshot size={16} />}
-            {model?.inputOptions?.audio && <IconWaveSine size={16} />}
-            {model?.inputOptions?.videos && <IconVideo size={16} />}
-          </div>}
+          {!!supportedInputs.length && (
+            <div className="plug-tg-flex plug-tg-items-center plug-tg-gap-2">
+              {model?.inputOptions?.images && <IconScreenshot size={16} />}
+              {model?.inputOptions?.audio && <IconWaveSine size={16} />}
+              {model?.inputOptions?.videos && <IconVideo size={16} />}
+            </div>
+          )}
         </div>
       </SettingItem>
     </>
@@ -187,10 +201,10 @@ export function cleanConfig<T>(options: T): T {
   return cleanedOptions;
 }
 
-
-
-
-export function convertArrayBufferToBase64Link(arrayBuffer: ArrayBuffer, type: string) {
+export function convertArrayBufferToBase64Link(
+  arrayBuffer: ArrayBuffer,
+  type: string
+) {
   // Convert the number array to a Base64 string using btoa and String.fromCharCode
   const base64String = arrayBufferToBase64(arrayBuffer);
 

@@ -225,7 +225,8 @@ export const PackageManagerView = (p: { parent: PackageManagerUI }) => {
                           strokeLinejoin="round"
                           className={clsx("svg-icon lucide-refresh-cw", {
                             // tailwind spin
-                            "plug-tg-animate-spin plug-tg-duration-700": refreshing,
+                            "plug-tg-animate-spin plug-tg-duration-700":
+                              refreshing,
                           })}
                         >
                           <path d="M21 2v6h-6"></path>
@@ -250,8 +251,9 @@ export const PackageManagerView = (p: { parent: PackageManagerUI }) => {
                   </div>
                   <div className="setting-item-control">
                     <div
-                      className={`checkbox-container mod-small ${justInstalled && "is-enabled"
-                        }`}
+                      className={`checkbox-container mod-small ${
+                        justInstalled && "is-enabled"
+                      }`}
                       onClick={() => toggleJustInstalled()}
                     >
                       <input type="checkbox" tabIndex={0} />

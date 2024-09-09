@@ -17,7 +17,8 @@ const default_values = {
 
 export default class LangchainChatGoogleGenerativeAIProvider
   extends LangchainBase
-  implements LLMProviderInterface {
+  implements LLMProviderInterface
+{
   static provider = "Langchain";
   static id = "Google GenerativeAI (Langchain)" as const;
   static slug = "googleGenerativeAI" as const;

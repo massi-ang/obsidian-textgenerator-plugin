@@ -236,7 +236,7 @@ export default class TextGeneratorPlugin extends Plugin {
             new PackageManagerUI(
               this.app,
               this,
-              async (result: string) => { }
+              async (result: string) => {}
             ).open();
           }
         );
@@ -249,7 +249,6 @@ export default class TextGeneratorPlugin extends Plugin {
       } catch (err: any) {
         console.trace("error in packageManager", err);
       }
-
 
       this.pluginAPIService = new PluginServiceAPI(this);
 

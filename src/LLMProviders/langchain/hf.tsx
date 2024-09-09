@@ -46,7 +46,9 @@ export default class LangchainHFProvider
   }
 
   async load() {
-    const { HuggingFaceInference } = await import("@langchain/community/llms/hf");
+    const { HuggingFaceInference } = await import(
+      "@langchain/community/llms/hf"
+    );
     this.llmClass = HuggingFaceInference;
   }
 

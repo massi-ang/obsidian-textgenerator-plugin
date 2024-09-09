@@ -16,7 +16,8 @@ const default_values = {
 
 export default class LangchainOpenAIChatProvider
   extends LangchainBase
-  implements LLMProviderInterface {
+  implements LLMProviderInterface
+{
   /** for models to know what provider is that, for example if this class is being extended. and the id changes. */
 
   static provider = "Langchain";

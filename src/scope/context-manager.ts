@@ -1,10 +1,4 @@
-import {
-  App,
-  Notice,
-  Component,
-  TFile,
-  HeadingCache,
-} from "obsidian";
+import { App, Notice, Component, TFile, HeadingCache } from "obsidian";
 import { AsyncReturnType, Context, Message } from "../types";
 import TextGeneratorPlugin from "../main";
 import { IGNORE_IN_YAML } from "../constants";
@@ -35,8 +29,7 @@ import JSON5 from "json5";
 import type { ContentManager } from "./content-manager/types";
 import { convertArrayBufferToBase64Link } from "#/LLMProviders/utils";
 
-
-import mime from "mime-types"
+import mime from "mime-types";
 import { InputOptions } from "#/lib/models";
 
 interface CodeBlock {
@@ -58,7 +51,6 @@ export interface InputContext {
   options?: AvailableContext;
   context?: string;
 }
-
 
 export interface AvailableContext {
   title?: string;
@@ -150,7 +142,7 @@ export default class ContextManager {
       if (!templatePath.length)
         return {
           options,
-          templatePath: ""
+          templatePath: "",
         };
 
       const { context, inputTemplate, outputTemplate } =
@@ -169,7 +161,7 @@ export default class ContextManager {
 
       const contextTemplate = this.plugin.settings.context.customInstructEnabled
         ? this.plugin.settings.context.customInstruct ||
-        this.plugin.defaultSettings.context.customInstruct
+          this.plugin.defaultSettings.context.customInstruct
         : "{{tg_selection}}";
 
       const options = await this.getDefaultContext(
@@ -399,23 +391,22 @@ export default class ContextManager {
 
     const context: AvailableContext = {
       keys: {},
-      _variables: {}
+      _variables: {},
     };
 
     const vars =
       this.getHBVariablesObjectOfTemplate(contextTemplate || "") || {};
     context["_variables"] = vars;
 
-
-    const activeFile = this.getActiveFile()
+    const activeFile = this.getActiveFile();
     context.noteFile = activeFile || undefined;
 
     const title =
       vars["title"] || vars["mentions"]
         ? (filePath
-          ? this.app.vault.getAbstractFileByPath(filePath)?.name ||
-          activeFile?.basename
-          : activeFile?.basename) || ""
+            ? this.app.vault.getAbstractFileByPath(filePath)?.name ||
+              activeFile?.basename
+            : activeFile?.basename) || ""
         : "";
 
     const activeDocCache = this.getMetaData(filePath || "");
@@ -503,7 +494,11 @@ export default class ContextManager {
     return context;
   }
 
-  async splitContent(markdownText: string, source?: TFile, options?: InputOptions): Promise<Message["content"]> {
+  async splitContent(
+    markdownText: string,
+    source?: TFile,
+    options?: InputOptions
+  ): Promise<Message["content"]> {
     if (!source) return markdownText;
     const metadata = this.app.metadataCache.getFileCache(source);
     if (!metadata?.embeds) return markdownText;
@@ -517,15 +512,16 @@ export default class ContextManager {
     metadata.embeds.sort((a, b) => b.original.length - a.original.length);
 
     // Create a function to escape regex special characters in strings
-    const escapeRegex = (string: string) => string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const escapeRegex = (string: string) =>
+      string.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 
     // Replace each embed in the markdown text
-    metadata.embeds.forEach(embed => {
-      const regex = new RegExp(escapeRegex(embed.original), 'g');
+    metadata.embeds.forEach((embed) => {
+      const regex = new RegExp(escapeRegex(embed.original), "g");
 
       markdownText.replace(regex, (match, index) => {
         // Add text segment before the embed if there is any
-        const content = markdownText.substring(lastIndex, index)
+        const content = markdownText.substring(lastIndex, index);
         if (index > lastIndex) {
           elements.push({ type: "text", text: content.trim() ? content : "_" });
         }
@@ -534,13 +530,13 @@ export default class ContextManager {
         elements.push({
           type: "image_url",
           image_url: {
-            url: embed.link
-          }
+            url: embed.link,
+          },
         });
 
         lastIndex = index + match.length;
 
-        return match
+        return match;
       });
     });
 
@@ -552,36 +548,47 @@ export default class ContextManager {
     // making base64 for
     for (let i = 0; i < elements.length; i++) {
       // @ts-ignore
-      if (elements[i].type == "image_url" && elements[i].image_url?.url && !elements[i].image_url.url.startsWith("http")) {
+      if (
+        elements[i].type == "image_url" &&
+        elements[i].image_url?.url &&
+        !elements[i].image_url.url.startsWith("http")
+      ) {
         // @ts-ignore
         const path = elements[i].image_url?.url;
         // @ts-ignore
-        const attachmentFolderPath: string = this.app.vault.getConfig?.("attachmentFolderPath"); // it works to getConfig in obsidian v1.6.5 
+        const attachmentFolderPath: string = this.app.vault.getConfig?.(
+          "attachmentFolderPath"
+        ); // it works to getConfig in obsidian v1.6.5
 
         let tfile = await this.app.vault.getFileByPath(path);
         if (!tfile) {
           // try to find in attachment folder, base user's preferences
-          tfile = await this.app.vault.getFileByPath(attachmentFolderPath + "/" + path);
+          tfile = await this.app.vault.getFileByPath(
+            attachmentFolderPath + "/" + path
+          );
           if (!tfile) continue;
         }
 
-        const mimtype = mime.lookup(tfile.extension) || ""
+        const mimtype = mime.lookup(tfile.extension) || "";
 
-        const buff = convertArrayBufferToBase64Link(await this.app.vault.readBinary(tfile as any), mimtype)
+        const buff = convertArrayBufferToBase64Link(
+          await this.app.vault.readBinary(tfile as any),
+          mimtype
+        );
 
         if (
-          (options?.images && mimtype.startsWith("image"))
-          || (options?.audio && mimtype.startsWith("audio"))
-          || (options?.videos && mimtype.startsWith("video"))
+          (options?.images && mimtype.startsWith("image")) ||
+          (options?.audio && mimtype.startsWith("audio")) ||
+          (options?.videos && mimtype.startsWith("video"))
         ) {
           // @ts-ignore
-          elements[i].image_url.url = buff
+          elements[i].image_url.url = buff;
         } else {
           elements[i] = {
             type: "text",
             // @ts-ignore
-            text: elements[i].image_url.url
-          }
+            text: elements[i].image_url.url,
+          };
         }
       }
     }
@@ -631,18 +638,18 @@ export default class ContextManager {
 
     const preRunnerTemplate = preRunnerContent
       ? this.handlebarsMiddleware(
-        Handlebars.compile(preRunnerContent, {
-          noEscape: true,
-        })
-      )
+          Handlebars.compile(preRunnerContent, {
+            noEscape: true,
+          })
+        )
       : null;
 
     const outputTemplate = outputContent
       ? this.handlebarsMiddleware(
-        Handlebars.compile(outputContent, {
-          noEscape: true,
-        })
-      )
+          Handlebars.compile(outputContent, {
+            noEscape: true,
+          })
+        )
       : null;
 
     return {
@@ -810,8 +817,10 @@ export default class ContextManager {
     );
 
     // remove duplicate links
-    const uniqueLinks = links?.filter((v, i, a) => a.findIndex(t => t.original === v.original) === i) || [];
-
+    const uniqueLinks =
+      links?.filter(
+        (v, i, a) => a.findIndex((t) => t.original === v.original) === i
+      ) || [];
 
     if (!uniqueLinks) return children;
 
@@ -953,13 +962,13 @@ export default class ContextManager {
     const extractorMethods = getExtractorMethods().filter(
       (e) =>
         this.plugin.settings.extractorsOptions[
-        e as keyof typeof this.plugin.settings.extractorsOptions
+          e as keyof typeof this.plugin.settings.extractorsOptions
         ]
     );
 
     const targetFile = filePath
       ? app.vault.getAbstractFileByPath(filePath) ||
-      this.app.workspace.getActiveFile()
+        this.app.workspace.getActiveFile()
       : this.app.workspace.getActiveFile();
 
     const targetFileContent = editor
@@ -1010,12 +1019,12 @@ export default class ContextManager {
         ...(!withoutCompatibility && {
           PromptInfo: {
             ...cache?.frontmatter,
-            ...(cache?.frontmatter?.PromptInfo),
+            ...cache?.frontmatter?.PromptInfo,
           },
 
           config: {
             ...cache?.frontmatter,
-            ...(cache?.frontmatter?.config),
+            ...cache?.frontmatter?.config,
             path_to_choices:
               cache?.frontmatter?.choices ||
               cache?.frontmatter?.path_to_choices,

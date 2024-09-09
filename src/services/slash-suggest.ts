@@ -48,7 +48,7 @@ export class SlashSuggest extends EditorSuggest<PromptTemplate> {
     const modal = new TemplatesModal(
       this.app,
       this.plugin,
-      async (result) => { },
+      async (result) => {},
       "Choose a template"
     );
 

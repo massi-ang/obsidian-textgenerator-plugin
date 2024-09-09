@@ -27,7 +27,7 @@ export default class ProviderBase implements LLMProviderInterface {
   streamable?: boolean | undefined;
   mobileSupport?: boolean | undefined;
 
-  async load() { }
+  async load() {}
 
   async generate(
     messages: Message[],
@@ -123,12 +123,16 @@ export default class ProviderBase implements LLMProviderInterface {
   // @ts-ignore
   getModels() {
     const models: any[] = Array.from(Object.entries(AI_MODELS))
-      .filter(k => k[1].llm.includes(this.plugin.textGenerator.LLMProvider?.originalId as any))
-      .map(k => {
+      .filter((k) =>
+        k[1].llm.includes(
+          this.plugin.textGenerator.LLMProvider?.originalId as any
+        )
+      )
+      .map((k) => {
         // @ts-ignore
         k[1].id = k[0];
         return k[1];
-      })
+      });
 
     return models;
   }
@@ -136,7 +140,7 @@ export default class ProviderBase implements LLMProviderInterface {
   makeMessage(content: any, role: "system" | "user" | "assistant"): Message {
     return {
       role,
-      content
+      content,
     };
   }
 }

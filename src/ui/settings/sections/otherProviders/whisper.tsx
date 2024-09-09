@@ -11,7 +11,7 @@ export const WhisperProviderName = "whisper";
 export const default_values = {
   base_path: "https://api.openai.com/v1",
   model: "whisper-1",
-  api_key: ""
+  api_key: "",
 };
 
 export default function WhisperProviderSetting(props: { register: Register }) {

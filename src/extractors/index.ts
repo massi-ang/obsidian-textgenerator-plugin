@@ -30,11 +30,12 @@ export default async function read(
       extractor.setExtractor("ImageExtractor");
       break;
 
-    default:
+    default: {
       const p = self.app.vault.getAbstractFileByPath(path);
       if (!p) throw new Error("file doesn't exist");
       // @ts-ignore
       return self.app.vault.cachedRead(p);
+    }
   }
 
   return await extractor.convert(path, otherOptions);

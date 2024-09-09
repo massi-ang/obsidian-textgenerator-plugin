@@ -206,7 +206,9 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> =
 
 type LiteralUnion<T extends U, U = string> = T | (U & { zz_IGNORE_ME?: never });
 
-export type Role = LiteralUnion<"assistant" | "user" | "human" | "system" | "admin">;
+export type Role = LiteralUnion<
+  "assistant" | "user" | "human" | "system" | "admin"
+>;
 
 export type Message = {
   type?: string;

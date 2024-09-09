@@ -76,11 +76,11 @@ export default function Helpersfn(self: ContextManager) {
         throw new Exception("Must pass iterator to #each");
       }
 
-      let fn = options.fn,
-        inverse = options.inverse,
-        i = 0,
-        ret = "",
-        data: any;
+      const fn = options.fn;
+      const inverse = options.inverse;
+      let i = 0;
+      let ret = "";
+      let data: any;
 
       if (typeof context == "function") {
         // @ts-ignore
@@ -378,8 +378,8 @@ export default function Helpersfn(self: ContextManager) {
           innerResult = innerTxt.trim().startsWith("{")
             ? JSON5.parse(innerTxt)
             : {
-              [param]: innerTxt,
-            };
+                [param]: innerTxt,
+              };
         } catch (err: any) {
           innerResult = {
             [param]: innerTxt,
@@ -432,12 +432,14 @@ export default function Helpersfn(self: ContextManager) {
 
       const id: string = templateId?.contains("/")
         ? // if it has a slash that means it already have the packageId
-        `["${templateId}"]`
+          `["${templateId}"]`
         : // checking for vars
-        Object.keys(additionalOptions.data.root.vars || {}).includes(templateId)
+          Object.keys(additionalOptions.data.root.vars || {}).includes(
+              templateId
+            )
           ? `vars["${templateId}"]`
           : // make packageId/templateId
-          `["${parentPackageId}/${templateId}"]`;
+            `["${parentPackageId}/${templateId}"]`;
 
       const val = lodashGet(additionalOptions.data.root, id);
 
@@ -474,12 +476,10 @@ export default function Helpersfn(self: ContextManager) {
         value = (await additionalOptions.fn(this)).trim();
       }
 
-      self.app.fileManager.processFrontMatter(self2.noteFile,
-        (frontMatter) => {
-          frontMatter[id] = value;
-          return frontMatter;
-        }
-      )
+      self.app.fileManager.processFrontMatter(self2.noteFile, (frontMatter) => {
+        frontMatter[id] = value;
+        return frontMatter;
+      });
 
       // lodashSet(additionalOptions.data.root, id, value);
       return "";
@@ -489,16 +489,16 @@ export default function Helpersfn(self: ContextManager) {
       const self2 = this as any as AvailableContext;
 
       if (!self2.noteFile?.path) return;
-      console.log(vars.length)
+      console.log(vars.length);
       const additionalOptions = vars.pop();
 
       let value = vars[0];
 
       if (additionalOptions?.fn) {
-        value = ("" + await additionalOptions.fn(this))?.trim();
+        value = ("" + (await additionalOptions.fn(this)))?.trim();
       }
-      console.log({ n: self2.noteFile, value })
-      await self.app.fileManager.renameFile(self2.noteFile, value)
+      console.log({ n: self2.noteFile, value });
+      await self.app.fileManager.renameFile(self2.noteFile, value);
       return "";
     },
 
@@ -672,8 +672,8 @@ export default function Helpersfn(self: ContextManager) {
           ...(typeof metadata == "object"
             ? metadata
             : {
-              tg_selection: metadata,
-            }),
+                tg_selection: metadata,
+              }),
         });
       };
 
@@ -715,8 +715,11 @@ export default function Helpersfn(self: ContextManager) {
 
     async dataview(...vars: any[]) {
       const options: { data: { root: any }; fn: any } = vars.pop();
-      if (!options.fn) throw new Error("this helper only works in block form ex: {{#dataview}} your dataview {{/dataview}}")
-      const content = await options.fn(options.data.root)
+      if (!options.fn)
+        throw new Error(
+          "this helper only works in block form ex: {{#dataview}} your dataview {{/dataview}}"
+        );
+      const content = await options.fn(options.data.root);
       const api = await getDataviewApi(self.app);
       const res = await api?.queryMarkdown(content);
 
@@ -729,7 +732,6 @@ export default function Helpersfn(self: ContextManager) {
       throw new Error(res.error);
     },
 
-
     // get time now
     async timeNow() {
       return moment().format("HH:mm:ss");
@@ -739,7 +741,6 @@ export default function Helpersfn(self: ContextManager) {
     async dateNow() {
       return moment().format("YYYY-MM-DD");
     },
-
   } as const;
 
   return Helpers;
@@ -765,16 +766,16 @@ export async function langPull(rep: string) {
 
   const data = compileLangMessages(
     k.kwargs.messages ||
-    (k.kwargs.template
-      ? [
-        {
-          prompt: {
-            template: k.kwargs.template,
-            inputVariables: k.kwargs.input_variables,
-          },
-        },
-      ]
-      : [])
+      (k.kwargs.template
+        ? [
+            {
+              prompt: {
+                template: k.kwargs.template,
+                inputVariables: k.kwargs.input_variables,
+              },
+            },
+          ]
+        : [])
   );
 
   return data;

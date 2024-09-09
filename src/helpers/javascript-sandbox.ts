@@ -64,7 +64,7 @@ export default async function runJSInSandbox(
 
       ce.setExtractor(
         ExtractorSlug[
-        id as keyof typeof ExtractorSlug
+          id as keyof typeof ExtractorSlug
         ] as keyof typeof Extractors
       );
 
@@ -91,7 +91,7 @@ export default async function runJSInSandbox(
     },
 
     manager: new PluginManager({
-      npmInstallMode: "useCache"
+      npmInstallMode: "useCache",
     }),
   };
 

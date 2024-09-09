@@ -201,10 +201,13 @@ export function mapMessagesToLangchainMessages(
   messages: Message[]
 ): BaseMessage[] {
   return messages.map((msg) => {
-    const msgF = typeof msg.content == "string" ? msg.content : {
-      name: msg.role,
-      content: msg.content
-    }
+    const msgF =
+      typeof msg.content == "string"
+        ? msg.content
+        : {
+            name: msg.role,
+            content: msg.content,
+          };
 
     switch (msg.role?.toLocaleLowerCase()) {
       case "system":

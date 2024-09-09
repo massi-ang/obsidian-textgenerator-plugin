@@ -143,17 +143,21 @@ export default function AdvancedSetting(props: { register: Register }) {
       >
         <Input
           type="checkbox"
-          value={"" + global.plugin.settings.advancedOptions?.includeAttachmentsInRequest}
+          value={
+            "" +
+            global.plugin.settings.advancedOptions?.includeAttachmentsInRequest
+          }
           setValue={async (val) => {
-            if (!global.plugin.settings.advancedOptions) global.plugin.settings.advancedOptions = {};
+            if (!global.plugin.settings.advancedOptions)
+              global.plugin.settings.advancedOptions = {};
 
-            global.plugin.settings.advancedOptions.includeAttachmentsInRequest = val == "true";
+            global.plugin.settings.advancedOptions.includeAttachmentsInRequest =
+              val == "true";
             await global.plugin.saveSettings();
             global.triggerReload();
           }}
         />
       </SettingItem>
-
 
       <SettingItem
         name="Templates Path"
